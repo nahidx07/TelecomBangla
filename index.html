@@ -1,0 +1,11 @@
+// ডাটাবেজ থেকে অফার লোড করা
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+async function loadOffers() {
+    const querySnapshot = await getDocs(collection(db, "offers"));
+    querySnapshot.forEach((doc) => {
+        const offer = doc.data();
+        console.log(offer.name, offer.price);
+        // এখানে কোড লিখে আপনার UI-তে অফারগুলো দেখাবেন
+    });
+}
