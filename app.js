@@ -1,11 +1,11 @@
 import { db, auth, provider, signInWithPopup } from './firebase-config.js';
-import { collection, getDocs, query, where, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, getDocs, query, where, doc, getDoc, setDoc, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const tg = window.Telegram.WebApp;
 const loginScreen = document.getElementById('login-screen');
 
-// ১. অটো লগইন লজিক
+// ১. অথেনটিকেশন চেক
 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
     const user = tg.initDataUnsafe.user;
     handleUserAuth(user.id.toString(), user.first_name, user.photo_url || "https://via.placeholder.com/150");
@@ -19,73 +19,46 @@ if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
     });
 }
 
-// ২. ইউজার ডাটাবেস চেক ও আপডেট
 async function handleUserAuth(uid, name, photo) {
     loginScreen.style.display = "none";
     const userRef = doc(db, "users", uid);
     const snap = await getDoc(userRef);
 
     if (!snap.exists()) {
-        const userData = { id: uid, name: name, photo: photo, balance: 0 };
+        const userData = { id: uid, name: name, photo: photo, balance: 0, role: "user" };
         await setDoc(userRef, userData);
         updateUI(userData);
     } else {
         updateUI(snap.data());
     }
+    loadTransactions(uid);
 }
 
 function updateUI(data) {
-    document.getElementById('user-name').innerText = data.name;
-    document.getElementById('phone-number').innerText = data.id.toString().substring(0, 11);
+    document.getElementById('balance').innerText = data.balance.toFixed(2);
     document.getElementById('user-pic').src = data.photo;
 }
 
-// ৩. অফার লোড করা (ছবির মতো ডিজাইন জেনারেট হবে)
-window.loadOffers = async (category) => {
-    const list = document.getElementById('offer-list');
-    list.innerHTML = `<p class="col-span-2 text-center text-gray-400 py-10">লোড হচ্ছে...</p>`;
-
-    try {
-        const q = query(collection(db, "offers"), where("category", "==", category));
-        const snap = await getDocs(q);
-        list.innerHTML = "";
-
-        if (snap.empty) {
-            list.innerHTML = `<p class="col-span-2 text-center text-gray-400 py-10">এই ক্যাটাগরিতে অফার নেই</p>`;
-            return;
-        }
-
-        snap.forEach(doc => {
-            const data = doc.data();
-            list.innerHTML += `
-                <div class="offer-card p-5 flex flex-col items-center">
-                    <div class="flex items-center gap-2 mb-2">
-                        <i class="fa-solid fa-globe text-blue-500"></i>
-                        <span class="font-bold text-sm text-gray-800 text-center">${data.title}</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-gray-400 text-[10px] mb-4 italic">
-                        <i class="fa-regular fa-clock text-red-400"></i> ${data.validity}
-                    </div>
-                    <button onclick="confirmBuy('${doc.id}', ${data.price})" class="price-btn w-full py-2 text-xs">
-                        ৳ ${data.price}
-                    </button>
-                </div>
-            `;
-        });
-    } catch (e) {
-        list.innerHTML = "সার্ভার এরর!";
-    }
+// ২. অফার দেখানোর ফাংশন (ক্লিক করলে অপারেটর লিস্ট আসার কথা)
+window.showOffers = (category) => {
+    // এখানে আপনি আলাদা একটি মোডাল বা পেজ ওপেন করে GP, Robi আইকন দেখাতে পারেন
+    alert(category + " অফারগুলো লোড হচ্ছে...");
+    // লজিক: window.location.href = 'operators.html?cat=' + category;
 };
 
-// ৪. কেনা নিশ্চিত করা
-window.confirmBuy = (id, price) => {
-    if(confirm(`আপনি কি ৳ ${price} দিয়ে অফারটি কিনতে চান?`)) {
-        alert("অর্ডার সফল! এডমিন এপ্রুভ করলে আপনি অফারটি পেয়ে যাবেন।");
-    }
+// ৩. সাম্প্রতিক লেনদেন লোড করা
+async function loadTransactions(uid) {
+    const list = document.getElementById('transaction-list');
+    // ফায়ারবেস থেকে লেনদেন আনা (যদি থাকে)
+    // const q = query(collection(db, "transactions"), where("uid", "==", uid), orderBy("date", "desc"), limit(5));
+    // ...
 }
 
-// ৫. গুগল লগইন বাটন
-document.getElementById('google-login').onclick = () => signInWithPopup(auth, provider);
+// ৪. ন্যাভিগেশন লজিক
+window.navigate = (page) => {
+    console.log("Navigating to: " + page);
+    // পেজ পরিবর্তন বা মোডাল ওপেন করার লজিক
+};
 
-// ডিফল্টভাবে অফার লোড
-window.onload = () => setTimeout(() => loadOffers('Internet'), 1000);
+// গুগল লগইন
+document.getElementById('google-login').onclick = () => signInWithPopup(auth, provider);
