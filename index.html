@@ -1,63 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telecom Bangla</title>
+    <title>Telecom Bangla Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        #login-screen { display: none; }
-        #main-app { display: none; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #F3F6FD; color: #333; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .offer-card { background: white; border-radius: 20px; transition: transform 0.2s; border: 1px solid #f0f0f0; }
+        .offer-card:active { transform: scale(0.97); }
+        .price-btn { background: linear-gradient(90deg, #FF8D8D 0%, #FFA88D 100%); color: white; border-radius: 12px; padding: 6px 15px; font-weight: bold; }
+        
+        /* Bottom Nav Curve Styling */
+        .bottom-nav { background: white; border-radius: 35px 35px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
+        .center-btn { background: linear-gradient(135deg, #FF8D8D 0%, #FFA88D 100%); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-top: -35px; box-shadow: 0 8px 20px rgba(255, 141, 141, 0.4); border: 5px solid white; }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="pb-32">
 
-    <!-- Login Screen (Only for Web Users) -->
-    <div id="login-screen" class="h-screen flex flex-col items-center justify-center p-6 bg-white">
-        <img src="https://via.placeholder.com/100" class="mb-6">
-        <h1 class="text-2xl font-bold text-blue-700 mb-2">টেলিকম বাংলা</h1>
-        <p class="text-gray-500 mb-8 text-center">এয়ারটেল, রবি, জিপি সহ সকল সিমের সেরা অফার এখানে।</p>
-        
-        <button id="google-login" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 p-3 rounded-xl shadow-sm hover:bg-gray-50 mb-4">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" class="w-6">
-            <span class="font-bold text-gray-700">Google দিয়ে লগইন করুন</span>
-        </button>
-        
-        <p class="text-xs text-gray-400">লগইন করার মাধ্যমে আমাদের শর্তাবলী মেনে নিচ্ছেন।</p>
+    <!-- Header Section -->
+    <div class="px-6 py-6 flex justify-between items-center bg-white shadow-sm">
+        <div class="flex items-center gap-3">
+            <img id="user-pic" class="w-12 h-12 rounded-full border border-gray-200" src="https://via.placeholder.com/150">
+            <div>
+                <h2 id="phone-number" class="text-gray-800 font-bold text-sm">01300918450</h2>
+                <p id="user-name" class="text-gray-400 text-xs">Nasir Bin Borhan</p>
+            </div>
+        </div>
+        <div class="flex gap-4 text-gray-400">
+            <button class="relative">
+                <i class="fa-regular fa-bell text-xl"></i>
+                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <i class="fa-solid fa-magnifying-glass text-xl"></i>
+        </div>
     </div>
 
-    <!-- Main App UI -->
-    <div id="main-app">
-        <!-- Header -->
-        <div class="bg-blue-700 p-6 text-white rounded-b-[40px] shadow-lg flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <img id="user-pic" class="w-12 h-12 rounded-full border-2 border-white" src="">
-                <div>
-                    <h2 id="user-name" class="font-bold italic">Loading...</h2>
-                    <p class="text-xs opacity-80">ID: <span id="user-id">0000</span></p>
-                </div>
+    <!-- Category Tabs -->
+    <div class="p-6 grid grid-cols-4 gap-4">
+        <div class="flex flex-col items-center">
+            <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-2">
+                <i class="fa-solid fa-tags text-blue-500 text-lg"></i>
             </div>
-            <div class="bg-white/20 p-2 rounded-xl text-center min-w-[80px]">
-                <p class="text-[10px] uppercase">ব্যালেন্স</p>
-                <p class="font-bold">৳ <span id="balance">0.00</span></p>
-            </div>
+            <span class="text-[11px] font-bold text-gray-600">My Offer</span>
         </div>
+        <div class="flex flex-col items-center">
+            <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-2">
+                <i class="fa-solid fa-globe text-blue-500 text-lg"></i>
+            </div>
+            <span class="text-[11px] font-bold text-gray-600">Data</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-2">
+                <i class="fa-solid fa-phone text-blue-500 text-lg"></i>
+            </div>
+            <span class="text-[11px] font-bold text-gray-600">Minute</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-2">
+                <i class="fa-regular fa-comment text-blue-500 text-lg"></i>
+            </div>
+            <span class="text-[11px] font-bold text-gray-600">SMS</span>
+        </div>
+    </div>
 
-        <!-- বাকি মেনু এবং অপারেটর সেকশন আগের মতোই থাকবে... -->
-        <div class="p-6">
-             <h3 class="font-bold text-gray-700 mb-4">অপারেটর সিলেক্ট করুন</h3>
-             <div class="grid grid-cols-3 gap-4">
-                 <button onclick="selectOp('GP')" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center">
-                     <img src="https://telecom-icons.web.app/gp.png" class="w-12">
-                     <span class="text-xs mt-2 font-bold italic">Grameenphone</span>
-                 </button>
-                 <!-- রবি, এয়ারটেল আইকনগুলো এখানে হবে -->
-             </div>
+    <!-- Offer Grid (Example Data) -->
+    <div id="offer-list" class="px-6 grid grid-cols-2 gap-4">
+        <!-- Card 1 -->
+        <div class="offer-card p-5 flex flex-col items-center">
+            <div class="flex items-center gap-2 mb-2">
+                <i class="fa-solid fa-globe text-blue-500"></i>
+                <span class="font-bold text-sm">4 GB + 500 MB</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-400 text-xs mb-4 italic">
+                <i class="fa-regular fa-clock text-red-400"></i> 7 Days
+            </div>
+            <button class="price-btn text-xs">USD 8.21</button>
         </div>
+        <!-- Card 2 -->
+        <div class="offer-card p-5 flex flex-col items-center">
+            <div class="flex items-center gap-2 mb-2">
+                <i class="fa-solid fa-globe text-blue-500"></i>
+                <span class="font-bold text-sm">4 GB + 500 MB</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-400 text-xs mb-4 italic">
+                <i class="fa-regular fa-clock text-red-400"></i> 7 Days
+            </div>
+            <button class="price-btn text-xs">USD 8.21</button>
+        </div>
+    </div>
+
+    <!-- Promotional Banner -->
+    <div class="px-6 mt-6">
+        <div class="relative rounded-[25px] overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-900 p-6 h-48 flex items-center shadow-lg">
+            <div class="z-10">
+                <p class="text-white/80 text-xs">Free</p>
+                <h3 class="text-white text-3xl font-bold mb-2 leading-tight">1.5GB</h3>
+                <p class="text-white/80 text-[10px] mb-4">New Sim Offer</p>
+                <button class="text-white/60 text-[10px] font-bold">More <i class="fa-solid fa-angles-right text-[8px]"></i></button>
+            </div>
+            <!-- Character Image Placeholder (Using a generic icon for code) -->
+            <div class="absolute right-0 bottom-0 h-full w-40 flex items-end">
+                <img src="https://i.ibb.co/L5wK60z/man-wow.png" class="object-contain h-[90%]" alt="">
+            </div>
+            <!-- Dail Code Badge -->
+            <div class="absolute right-4 top-1/2 bg-white/20 backdrop-blur-md p-3 rounded-2xl border border-white/30">
+                <p class="text-white text-[10px]">Dail</p>
+                <p class="text-white text-xs font-bold">*982*5#</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="fixed bottom-0 left-0 right-0 bottom-nav px-6 py-4 flex justify-between items-center z-50">
+        <button onclick="navigate('recharge')" class="flex flex-col items-center gap-1 text-gray-400">
+            <i class="fa-solid fa-wallet text-xl"></i>
+            <span class="text-[10px] font-bold">Recharge</span>
+        </button>
+        <button onclick="navigate('offers')" class="flex flex-col items-center gap-1 text-red-400">
+            <i class="fa-solid fa-gift text-xl"></i>
+            <span class="text-[10px] font-bold">Offers</span>
+        </button>
+        
+        <!-- Home Button in Center -->
+        <button onclick="navigate('home')" class="center-btn">
+            <i class="fa-solid fa-bolt-lightning text-xl"></i>
+        </button>
+
+        <button onclick="navigate('history')" class="flex flex-col items-center gap-1 text-gray-400">
+            <i class="fa-solid fa-clock-rotate-left text-xl"></i>
+            <span class="text-[10px] font-bold">History</span>
+        </button>
+        <button onclick="navigate('account')" class="flex flex-col items-center gap-1 text-gray-400">
+            <i class="fa-solid fa-circle-user text-xl"></i>
+            <span class="text-[10px] font-bold">Account</span>
+        </button>
     </div>
 
     <script type="module" src="app.js"></script>
+    <script>
+        // Simple Navigation Logic
+        function navigate(page) {
+            console.log("Navigating to: " + page);
+            // এখানে আপনার পেজ চেঞ্জ করার লজিক দিতে পারেন
+        }
+    </script>
 </body>
 </html>
