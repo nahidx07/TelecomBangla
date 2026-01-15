@@ -6,110 +6,147 @@
     <title>Telicom Bangla</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Hind Siliguri', sans-serif; background-color: #F8F9FB; }
-        .nagad-red { color: #D12026; }
-        .nagad-bg { background: linear-gradient(to right, #D12026, #A5191E); }
-        .card-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        #login-screen { display: none; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 100; }
-        .center-home { background: #D12026; width: 50px; height: 50px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; margin-top: -35px; border: 4px solid white; box-shadow: 0 4px 10px rgba(209,32,38,0.3); }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #F4F7FE; color: #333; }
+        .offer-card { background: white; border-radius: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f0f0f0; transition: 0.3s; }
+        .price-btn { background: linear-gradient(90deg, #FF8D8D 0%, #FFA88D 100%); color: white; border-radius: 12px; font-weight: bold; width: 100%; padding: 8px; font-size: 14px; }
+        .category-icon { background: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 8px; color: #5C6BC0; font-size: 20px; }
+        
+        /* Bottom Nav Styling */
+        .bottom-nav { background: white; border-radius: 35px 35px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.04); position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 15px 10px; z-index: 100; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #9E9E9E; font-weight: 600; }
+        .nav-item.active { color: #FF8D8D; }
+        .center-home { background: linear-gradient(135deg, #FF8D8D 0%, #FFA88D 100%); width: 55px; height: 55px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; margin-top: -45px; border: 5px solid #F4F7FE; box-shadow: 0 8px 20px rgba(255, 141, 141, 0.4); font-size: 22px; }
+        
         .hidden { display: none; }
+        #login-screen { position: fixed; inset: 0; background: white; z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-32">
 
-    <!-- Login Screen for Web -->
-    <div id="login-screen" class="fixed inset-0 bg-white z-[2000] flex flex-col items-center justify-center">
-        <h1 class="text-2xl font-bold nagad-red mb-10">Telicom Bangla</h1>
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <h1 class="text-2xl font-bold mb-10 text-indigo-900 italic">Telicom Bangla</h1>
         <button id="google-login" class="flex items-center gap-3 border px-6 py-3 rounded-2xl shadow-sm">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" class="w-6">
-            <span class="font-bold text-gray-700">Google Login</span>
+            <span class="font-bold text-gray-700">Google দিয়ে লগইন করুন</span>
         </button>
     </div>
 
-    <!-- Header -->
-    <div class="bg-white px-4 py-3 flex justify-between items-center card-shadow sticky top-0 z-50">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-house-chimney-window text-xl nagad-red"></i>
+    <!-- Header Area -->
+    <div class="px-6 py-6 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <img id="user-pic" class="w-12 h-12 rounded-full border-2 border-white shadow-md object-cover" src="https://via.placeholder.com/150">
             <div>
-                <h1 class="text-md font-bold leading-tight">Telicom Bangla</h1>
-                <span class="bg-yellow-400 text-[9px] px-2 py-0.5 rounded-full font-bold">স্বধীন</span>
+                <h2 id="phone-number" class="text-gray-800 font-bold text-sm leading-tight">01300918450</h2>
+                <p id="user-name" class="text-gray-400 text-[11px] font-medium">Nasir Bin Borhan</p>
             </div>
         </div>
-        <img id="user-pic" class="w-8 h-8 rounded-full border border-gray-200" src="">
+        <div class="flex gap-5 text-gray-400">
+            <div class="relative">
+                <i class="fa-regular fa-bell text-xl"></i>
+                <span class="absolute top-0 right-0 w-2 h-2 bg-red-400 rounded-full border border-white"></span>
+            </div>
+            <i class="fa-solid fa-magnifying-glass text-xl"></i>
+        </div>
     </div>
 
     <!-- Home View -->
-    <div id="home-view" class="p-4">
-        <!-- Balance -->
-        <div class="bg-white rounded-2xl p-4 flex justify-between items-center card-shadow mb-6">
-            <div class="flex items-center gap-3">
-                <div class="nagad-bg w-9 h-9 rounded-full flex items-center justify-center text-white font-bold italic shadow-md">৳</div>
-                <div>
-                    <p class="text-[10px] text-gray-400 font-bold uppercase">ব্যালেন্স</p>
-                    <p class="text-sm font-bold">৳ <span id="balance">0.00</span></p>
-                </div>
+    <div id="home-view">
+        <!-- Categories -->
+        <div class="px-6 mb-8 grid grid-cols-4 gap-2">
+            <div onclick="openOperators('My Offer')" class="flex flex-col items-center">
+                <div class="category-icon"><i class="fa-solid fa-tags"></i></div>
+                <span class="text-[11px] font-bold text-gray-500">My Offer</span>
             </div>
-            <div class="flex flex-col items-center">
-                <i class="fa-solid fa-wallet text-green-500 text-lg"></i>
-                <span class="text-[10px] font-bold">অ্যাড মানি</span>
+            <div onclick="openOperators('Internet')" class="flex flex-col items-center">
+                <div class="category-icon"><i class="fa-solid fa-globe"></i></div>
+                <span class="text-[11px] font-bold text-gray-500">Data</span>
+            </div>
+            <div onclick="openOperators('Minute')" class="flex flex-col items-center">
+                <div class="category-icon"><i class="fa-solid fa-phone"></i></div>
+                <span class="text-[11px] font-bold text-gray-500">Minute</span>
+            </div>
+            <div onclick="openOperators('SMS')" class="flex flex-col items-center">
+                <div class="category-icon"><i class="fa-regular fa-comment-dots"></i></div>
+                <span class="text-[11px] font-bold text-gray-500">SMS</span>
             </div>
         </div>
 
-        <!-- Services -->
-        <div class="bg-white rounded-3xl p-6 grid grid-cols-4 gap-y-8 card-shadow">
-            <div onclick="showOperators('Internet')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/3132/3132145.png" class="w-10 h-10 mb-2">
-                <span class="text-[11px] font-bold">ইন্টারনেট</span>
-            </div>
-            <div onclick="showOperators('Bundle')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/3011/3011831.png" class="w-10 h-10 mb-2">
-                <span class="text-[11px] font-bold">বান্ডেল</span>
-            </div>
-            <div onclick="showOperators('Minute')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/3132/3132128.png" class="w-10 h-10 mb-2">
-                <span class="text-[11px] font-bold">মিনিট</span>
-            </div>
-            <div onclick="showOperators('SMS')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/2854/2854313.png" class="w-10 h-10 mb-2">
-                <span class="text-[11px] font-bold">এসএমএস</span>
-            </div>
+        <!-- Section Title -->
+        <div class="px-6 flex justify-between items-center mb-5">
+            <h3 class="font-bold text-gray-800">স্পেশাল অফার</h3>
+            <p class="text-[11px] font-bold text-indigo-500">সব দেখুন</p>
+        </div>
+
+        <!-- Offers Grid -->
+        <div id="offer-list" class="px-6 grid grid-cols-2 gap-4">
+            <!-- Dynamic Content -->
         </div>
     </div>
 
-    <!-- Operator & Offer View Logic will be handled by script -->
-    <div id="dynamic-view" class="hidden p-6">
-        <button onclick="location.reload()" class="nagad-red font-bold mb-4 flex items-center gap-2">
+    <!-- Dynamic View Area (For Operators & Details) -->
+    <div id="dynamic-view" class="hidden px-6">
+        <button onclick="location.reload()" class="text-indigo-600 font-bold mb-6 flex items-center gap-2">
             <i class="fa-solid fa-arrow-left"></i> ফিরে যান
         </button>
-        <div id="content-area" class="grid grid-cols-3 gap-6"></div>
+        <div id="content-area"></div>
     </div>
 
-    <!-- Bottom Nav -->
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <div class="nav-item nagad-red"><i class="fa-solid fa-house text-lg"></i><br>হোম</div>
-        <div class="nav-item"><i class="fa-solid fa-list-ul text-lg"></i><br>লেনদেন</div>
-        <div onclick="location.reload()" class="center-home"><i class="fa-solid fa-house"></i></div>
-        <div class="nav-item"><i class="fa-solid fa-user-group text-lg"></i><br>কন্টাক্টস</div>
-        <div class="nav-item"><i class="fa-solid fa-bars text-lg"></i><br>আমার নগদ</div>
+        <!-- 1. Recharge at the beginning -->
+        <div onclick="alert('Recharge Coming Soon')" class="nav-item">
+            <i class="fa-solid fa-wallet text-xl mb-1"></i>
+            <span>Recharge</span>
+        </div>
+        <!-- 2. Offers -->
+        <div onclick="openOperators('Internet')" class="nav-item active">
+            <i class="fa-solid fa-gift text-xl mb-1"></i>
+            <span>Offers</span>
+        </div>
+        
+        <!-- 3. Home in middle -->
+        <div onclick="location.reload()" class="center-home">
+            <i class="fa-solid fa-bolt-lightning"></i>
+        </div>
+
+        <!-- 4. History (Replaced Explore) -->
+        <div onclick="alert('History')" class="nav-item">
+            <i class="fa-solid fa-clock-rotate-left text-xl mb-1"></i>
+            <span>History</span>
+        </div>
+        <!-- 5. Account -->
+        <div onclick="alert('Account')" class="nav-item">
+            <i class="fa-solid fa-circle-user text-xl mb-1"></i>
+            <span>Account</span>
+        </div>
     </div>
 
+    <!-- Script Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        
-        const firebaseConfig = { /* Your Config */ };
+
+        // ১. ফায়ারবেস কনফিগ (আপনার কী এখানে বসান)
+        const firebaseConfig = {
+  apiKey: "AIzaSyCbYJQ9y9CJKiT5aJyrIA0pFRGy1uvZikA",
+  authDomain: "telicombangla-1.firebaseapp.com",
+  projectId: "telicombangla-1",
+  storageBucket: "telicombangla-1.firebasestorage.app",
+  messagingSenderId: "1020351520674",
+  appId: "1:1020351520674:web:c84659bc5ca2f6b41edcfb"
+};
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // ১. অটো লগইন লজিক
-        async function initAuth() {
+        // ২. অটো লগইন লজিক
+        async function checkAuth() {
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 const u = tg.initDataUnsafe.user;
                 handleUser(u.id.toString(), u.first_name, u.photo_url || `https://ui-avatars.com/api/?name=${u.first_name}`);
@@ -124,53 +161,77 @@
             const snap = await getDoc(ref);
             if (!snap.exists()) {
                 await setDoc(ref, { id: uid, name, photo, balance: 0 });
-                render(name, photo, 0);
+                updateUI(name, uid, photo);
             } else {
                 const d = snap.data();
-                render(d.name, d.photo, d.balance);
+                updateUI(d.name, d.id, d.photo);
             }
+            loadSpecialOffers(); // ডিফল্ট অফার লোড
         }
 
-        function render(n, p, b) {
+        function updateUI(n, id, p) {
+            document.getElementById('user-name').innerText = n;
+            document.getElementById('phone-number').innerText = id;
             document.getElementById('user-pic').src = p;
-            document.getElementById('balance').innerText = b.toFixed(2);
         }
 
-        window.showOperators = (cat) => {
+        // ৩. ডাইনামিক অফার লোড
+        async function loadSpecialOffers() {
+            const list = document.getElementById('offer-list');
+            list.innerHTML = '<p class="col-span-2 text-center text-gray-400 py-10">লোড হচ্ছে...</p>';
+            const q = query(collection(db, "offers"), where("category", "==", "Internet"));
+            const snap = await getDocs(q);
+            list.innerHTML = "";
+            snap.forEach(d => {
+                const off = d.data();
+                list.innerHTML += `
+                    <div class="offer-card p-5 flex flex-col items-center">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-globe text-indigo-400"></i>
+                            <span class="font-bold text-xs text-gray-800">${off.title}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-gray-400 text-[10px] mb-4 italic">
+                            <i class="fa-regular fa-clock text-red-300"></i> 7 Days
+                        </div>
+                        <button onclick="buyOffer('${d.id}', ${off.price})" class="price-btn">৳ ${off.price}</button>
+                    </div>`;
+            });
+        }
+
+        window.openOperators = (cat) => {
             const area = document.getElementById('content-area');
             document.getElementById('home-view').classList.add('hidden');
             document.getElementById('dynamic-view').classList.remove('hidden');
-            
             const ops = ['GP', 'Robi', 'Airtel', 'Banglalink', 'Teletalk'];
-            area.innerHTML = ops.map(op => `
-                <div onclick="loadOffers('${op}', '${cat}')" class="flex flex-col items-center">
-                    <div class="bg-white p-2 rounded-2xl shadow-sm mb-2">
-                        <img src="https://telecom-icons.web.app/${op.toLowerCase()}.png" class="w-12 h-12">
-                    </div>
+            area.innerHTML = `<h3 class="font-bold mb-6">অপারেটর সিলেক্ট করুন (${cat})</h3><div class="grid grid-cols-3 gap-6">` + 
+                ops.map(op => `
+                <div onclick="loadSpecificOffers('${op}', '${cat}')" class="flex flex-col items-center">
+                    <div class="bg-white p-3 rounded-2xl shadow-sm mb-2"><img src="https://telecom-icons.web.app/${op.toLowerCase()}.png" class="w-10 h-10"></div>
                     <span class="text-xs font-bold">${op}</span>
-                </div>
-            `).join('');
+                </div>`).join('') + `</div>`;
         };
 
-        window.loadOffers = async (op, cat) => {
+        window.loadSpecificOffers = async (op, cat) => {
             const area = document.getElementById('content-area');
-            area.innerHTML = '<p class="col-span-3 text-center">লোড হচ্ছে...</p>';
+            area.innerHTML = '<p class="text-center py-20">অফার খোঁজা হচ্ছে...</p>';
             const q = query(collection(db, "offers"), where("operator", "==", op), where("category", "==", cat));
             const snap = await getDocs(q);
-            area.classList.remove('grid-cols-3');
-            area.classList.add('grid-cols-1');
-            area.innerHTML = snap.empty ? '<p>অফার নেই</p>' : '';
-            snap.forEach(d => {
-                const off = d.data();
-                area.innerHTML += `
-                    <div class="bg-white p-4 rounded-2xl flex justify-between items-center mb-3 shadow-sm">
-                        <div><p class="font-bold">${off.title}</p><p class="text-xs text-red-600 font-bold">৳ ${off.price}</p></div>
-                        <button class="nagad-bg text-white px-4 py-2 rounded-full text-xs">কিনুন</button>
+            area.innerHTML = `<h3 class="font-bold mb-6">${op} - ${cat} প্যাক</h3><div class="grid grid-cols-1 gap-4">` +
+                (snap.empty ? '<p>বর্তমানে কোনো অফার নেই</p>' : '') + 
+                snap.docs.map(d => {
+                    const o = d.data();
+                    return `<div class="bg-white p-5 rounded-3xl flex justify-between items-center shadow-sm border border-gray-50">
+                        <div><p class="font-bold text-sm">${o.title}</p><p class="text-indigo-500 font-bold">৳ ${o.price}</p></div>
+                        <button onclick="buyOffer('${d.id}', ${o.price})" class="bg-indigo-600 text-white px-5 py-2 rounded-2xl text-xs font-bold">কিনুন</button>
                     </div>`;
-            });
+                }).join('') + `</div>`;
         };
 
-        initAuth();
+        window.buyOffer = (id, price) => {
+            if(confirm(`৳${price} দিয়ে অফারটি কিনতে চান?`)) alert("অর্ডার সফল!");
+        }
+
+        checkAuth();
     </script>
 </body>
 </html>
