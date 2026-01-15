@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 module.exports = async (req, res) => {
     const TOKEN = "YOUR_TELEGRAM_BOT_TOKEN";
-    const APP_URL = "https://your-vercel-link.vercel.app";
+    const APP_URL = "YOUR_VERCEL_URL";
 
     if (req.method === 'POST') {
         const { message } = req.body;
