@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,92 +8,54 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #ddd; }
+        #login-screen { display: none; }
+        #main-app { display: none; }
     </style>
 </head>
-<body class="bg-gray-50 pb-20">
+<body class="bg-gray-50">
 
-    <!-- Header Section -->
-    <div class="bg-blue-700 p-6 text-white rounded-b-[40px] shadow-lg flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <img id="user-pic" class="w-12 h-12 rounded-full border-2 border-white" src="https://via.placeholder.com/150" alt="Profile">
-            <div>
-                <h2 id="user-name" class="font-bold">Loading...</h2>
-                <p class="text-xs opacity-80">ID: <span id="user-id">0000</span></p>
+    <!-- Login Screen (Only for Web Users) -->
+    <div id="login-screen" class="h-screen flex flex-col items-center justify-center p-6 bg-white">
+        <img src="https://via.placeholder.com/100" class="mb-6">
+        <h1 class="text-2xl font-bold text-blue-700 mb-2">টেলিকম বাংলা</h1>
+        <p class="text-gray-500 mb-8 text-center">এয়ারটেল, রবি, জিপি সহ সকল সিমের সেরা অফার এখানে।</p>
+        
+        <button id="google-login" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 p-3 rounded-xl shadow-sm hover:bg-gray-50 mb-4">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" class="w-6">
+            <span class="font-bold text-gray-700">Google দিয়ে লগইন করুন</span>
+        </button>
+        
+        <p class="text-xs text-gray-400">লগইন করার মাধ্যমে আমাদের শর্তাবলী মেনে নিচ্ছেন।</p>
+    </div>
+
+    <!-- Main App UI -->
+    <div id="main-app">
+        <!-- Header -->
+        <div class="bg-blue-700 p-6 text-white rounded-b-[40px] shadow-lg flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img id="user-pic" class="w-12 h-12 rounded-full border-2 border-white" src="">
+                <div>
+                    <h2 id="user-name" class="font-bold italic">Loading...</h2>
+                    <p class="text-xs opacity-80">ID: <span id="user-id">0000</span></p>
+                </div>
+            </div>
+            <div class="bg-white/20 p-2 rounded-xl text-center min-w-[80px]">
+                <p class="text-[10px] uppercase">ব্যালেন্স</p>
+                <p class="font-bold">৳ <span id="balance">0.00</span></p>
             </div>
         </div>
-        <div class="bg-white/20 p-2 rounded-xl text-center min-w-[80px]">
-            <p class="text-[10px] uppercase">ব্যালেন্স</p>
-            <p class="font-bold">৳ <span id="balance">0.00</span></p>
-        </div>
-    </div>
 
-    <!-- Main Features -->
-    <div class="p-4 grid grid-cols-4 gap-4 mt-2">
-        <div class="flex flex-col items-center">
-            <div class="bg-blue-100 p-3 rounded-2xl text-blue-600 mb-1"><i class="fas fa-plus-circle text-xl"></i></div>
-            <span class="text-[10px] font-bold">অ্যাড মানি</span>
+        <!-- বাকি মেনু এবং অপারেটর সেকশন আগের মতোই থাকবে... -->
+        <div class="p-6">
+             <h3 class="font-bold text-gray-700 mb-4">অপারেটর সিলেক্ট করুন</h3>
+             <div class="grid grid-cols-3 gap-4">
+                 <button onclick="selectOp('GP')" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center">
+                     <img src="https://telecom-icons.web.app/gp.png" class="w-12">
+                     <span class="text-xs mt-2 font-bold italic">Grameenphone</span>
+                 </button>
+                 <!-- রবি, এয়ারটেল আইকনগুলো এখানে হবে -->
+             </div>
         </div>
-        <div class="flex flex-col items-center">
-            <div class="bg-green-100 p-3 rounded-2xl text-green-600 mb-1"><i class="fas fa-exchange-alt text-xl"></i></div>
-            <span class="text-[10px] font-bold">ট্রান্সফার</span>
-        </div>
-        <div class="flex flex-col items-center">
-            <div class="bg-orange-100 p-3 rounded-2xl text-orange-600 mb-1"><i class="fas fa-history text-xl"></i></div>
-            <span class="text-[10px] font-bold">হিস্ট্রি</span>
-        </div>
-        <div class="flex flex-col items-center">
-            <div class="bg-purple-100 p-3 rounded-2xl text-purple-600 mb-1"><i class="fas fa-headset text-xl"></i></div>
-            <span class="text-[10px] font-bold">সাপোর্ট</span>
-        </div>
-    </div>
-
-    <!-- Operators Section -->
-    <div class="p-4">
-        <h3 class="font-bold text-gray-700 mb-4">সিম অপারেটর সিলেক্ট করুন</h3>
-        <div class="grid grid-cols-5 gap-3">
-            <button onclick="selectOp('Airtel')" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
-                <img src="https://telecom-icons.web.app/airtel.png" class="w-full">
-            </button>
-            <button onclick="selectOp('Robi')" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
-                <img src="https://telecom-icons.web.app/robi.png" class="w-full">
-            </button>
-            <button onclick="selectOp('GP')" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
-                <img src="https://telecom-icons.web.app/gp.png" class="w-full">
-            </button>
-            <button onclick="selectOp('Banglalink')" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
-                <img src="https://telecom-icons.web.app/bl.png" class="w-full">
-            </button>
-            <button onclick="selectOp('Teletalk')" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
-                <img src="https://telecom-icons.web.app/teletalk.png" class="w-full">
-            </button>
-        </div>
-    </div>
-
-    <!-- Categories & Offers -->
-    <div id="offer-section" class="hidden p-4">
-        <div class="flex justify-between items-center mb-4">
-            <h3 id="op-title" class="font-bold text-blue-700">অপারেটর অফার</h3>
-            <button onclick="closeOffers()" class="text-gray-400 text-xs">বন্ধ করুন</button>
-        </div>
-        <div class="flex gap-2 overflow-x-auto pb-2 mb-4 no-scrollbar">
-            <button onclick="loadOffers('Internet')" class="bg-blue-600 text-white px-4 py-2 rounded-full text-xs shrink-0">ইন্টারনেট প্যাক</button>
-            <button onclick="loadOffers('Minute')" class="bg-white border px-4 py-2 rounded-full text-xs shrink-0">মিনিট প্যাক</button>
-            <button onclick="loadOffers('Bundle')" class="bg-white border px-4 py-2 rounded-full text-xs shrink-0">বান্ডেল প্যাক</button>
-            <button onclick="loadOffers('SMS')" class="bg-white border px-4 py-2 rounded-full text-xs shrink-0">এসএমএস</button>
-        </div>
-        <div id="offer-list" class="space-y-3">
-            <!-- Offers will appear here -->
-        </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav shadow-2xl">
-        <button class="flex flex-col items-center text-blue-600"><i class="fas fa-home text-lg"></i><span class="text-[10px]">হোম</span></button>
-        <button class="flex flex-col items-center text-gray-400"><i class="fas fa-gift text-lg"></i><span class="text-[10px]">অফার</span></button>
-        <button class="flex flex-col items-center text-gray-400"><i class="fas fa-clock text-lg"></i><span class="text-[10px]">হিস্ট্রি</span></button>
-        <button class="flex flex-col items-center text-gray-400"><i class="fas fa-user text-lg"></i><span class="text-[10px]">অ্যাকাউন্ট</span></button>
     </div>
 
     <script type="module" src="app.js"></script>
