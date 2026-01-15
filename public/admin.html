@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input, select, button { width: 100%; padding: 12px; margin-top: 10px; border: 1px solid #ddd; border-radius: 8px; }
+        button { background: #5865f2; color: white; font-weight: bold; border: none; cursor: pointer; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="card">
+        <h3>Add New Offer</h3>
+        <input type="text" id="offTitle" placeholder="Offer Name (e.g. 10GB 30Days)">
+        <input type="number" id="offPrice" placeholder="Price">
+        <select id="offOp">
+            <option>Robi</option><option>GP</option><option>BL</option><option>Airtel</option><option>Teletalk</option>
+        </select>
+        <input type="text" id="offVal" placeholder="Validity (e.g. 30 Days)">
+        <button onclick="addOffer()">Add Offer</button>
+    </div>
+
+    <div class="card">
+        <h3>Bot Settings</h3>
+        <input type="text" id="chanLink" placeholder="Telegram Channel URL">
+        <button onclick="updateSettings()">Update Channel Link</button>
+    </div>
+
+    <script>
+        // Use Same Firebase Config
+        const firebaseConfig = { /* আপনার কনফিগ */ };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function addOffer() {
+            db.collection('offers').add({
+                title: document.getElementById('offTitle').value,
+                price: document.getElementById('offPrice').value,
+                operator: document.getElementById('offOp').value,
+                validity: document.getElementById('offVal').value
+            }).then(() => alert("Offer Added!"));
+        }
+
+        function updateSettings() {
+            db.collection('settings').doc('config').set({
+                channelLink: document.getElementById('chanLink').value
+            }).then(() => alert("Settings Updated!"));
+        }
+    </script>
+</body>
+</html>
