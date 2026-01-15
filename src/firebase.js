@@ -3,12 +3,12 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "আপনার_API_KEY",
-  authDomain: "আপনার_DOMAIN",
-  projectId: "আপনার_PROJECT_ID",
-  storageBucket: "আপনার_BUCKET",
-  messagingSenderId: "আপনার_ID",
-  appId: "আপনার_APP_ID"
+  apiKey: "AIzaSyCbYJQ9y9CJKiT5aJyrIA0pFRGy1uvZikA",
+  authDomain: "telicombangla-1.firebaseapp.com",
+  projectId: "telicombangla-1",
+  storageBucket: "telicombangla-1.firebasestorage.app",
+  messagingSenderId: "1020351520674",
+  appId: "1:1020351520674:web:c84659bc5ca2f6b41edcfb"
 };
 
 const app = initializeApp(firebaseConfig);
