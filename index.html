@@ -3,160 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telicom Bangla - Nagad Style</title>
+    <title>Telicom Bangla</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Hind Siliguri', sans-serif; background-color: #F7F7F7; color: #333; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #F7F7F7; }
         .nagad-red { color: #D12026; }
-        .nagad-bg-red { background-color: #D12026; }
-        .card-shadow { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .service-icon { width: 45px; height: 45px; margin-bottom: 8px; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #777; font-weight: 600; }
+        .nagad-bg-red { background: linear-gradient(to right, #D12026, #A5191E); }
+        .card-shadow { box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .hidden-view { display: none; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 100; }
+        .nav-item { flex: 1; text-align: center; font-size: 11px; color: #777; font-weight: bold; }
         .nav-item.active { color: #D12026; }
-        #login-screen { display: none; position: fixed; inset: 0; background: white; z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
+        .operator-img { width: 50px; height: 50px; border-radius: 12px; margin-bottom: 5px; }
     </style>
 </head>
 <body class="pb-24">
 
     <!-- Login Screen -->
-    <div id="login-screen">
+    <div id="login-screen" class="fixed inset-0 bg-white z-[2000] flex flex-col items-center justify-center hidden-view">
         <img src="https://telecom-icons.web.app/logo.png" class="w-24 mb-6">
-        <button id="google-login" class="flex items-center gap-3 bg-white border p-4 rounded-2xl shadow-sm">
+        <button id="google-login" class="flex items-center gap-3 border p-4 rounded-2xl shadow-sm">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" class="w-6">
             <span class="font-bold">গুগল দিয়ে প্রবেশ করুন</span>
         </button>
     </div>
 
-    <!-- Header Section -->
-    <div class="bg-white px-4 py-3 flex justify-between items-center card-shadow">
+    <!-- Header -->
+    <div class="bg-white px-4 py-3 flex justify-between items-center card-shadow sticky top-0 z-50">
         <div class="flex items-center gap-3">
             <i class="fa-solid fa-house-chimney-window text-xl nagad-red"></i>
             <div>
                 <h1 class="text-md font-bold leading-none">Telicom Bangla</h1>
-                <span class="bg-yellow-400 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1 mt-1">
-                    <i class="fa-solid fa-crown text-[8px]"></i> স্বাধীন
-                </span>
+                <span class="bg-yellow-400 text-[9px] px-2 py-0.5 rounded-full font-bold mt-1 inline-block">স্বধীন</span>
             </div>
         </div>
-        <div class="flex gap-4 text-gray-600 items-center">
+        <div class="flex gap-4 text-gray-500 items-center">
             <i class="fa-regular fa-bell text-xl"></i>
             <i class="fa-solid fa-headset text-xl"></i>
-            <img id="user-pic" class="w-8 h-8 rounded-full border border-gray-200" src="https://via.placeholder.com/150">
+            <img id="user-pic" class="w-8 h-8 rounded-full border border-gray-200" src="">
         </div>
     </div>
 
-    <!-- Balance Card -->
-    <div class="p-4">
-        <div class="bg-white rounded-xl p-4 flex justify-between items-center card-shadow">
-            <div class="flex items-center gap-3">
-                <div class="bg-red-700 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold italic">৳</div>
-                <div>
-                    <p class="text-xs text-gray-500 font-semibold">একাউন্ট ব্যালেন্স</p>
-                    <p class="text-sm font-bold">৳ <span id="balance">0.00</span></p>
+    <!-- VIEW 1: HOME PAGE -->
+    <div id="view-home">
+        <!-- Balance -->
+        <div class="p-4">
+            <div class="bg-white rounded-xl p-4 flex justify-between items-center card-shadow">
+                <div class="flex items-center gap-3">
+                    <div class="nagad-bg-red w-8 h-8 rounded-full flex items-center justify-center text-white font-bold italic">৳</div>
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase">একাউন্ট ব্যালেন্স</p>
+                        <p class="text-sm font-bold">৳ <span id="balance">0.00</span></p>
+                    </div>
+                </div>
+                <div onclick="alert('Add Money Coming Soon')" class="flex flex-col items-center">
+                    <i class="fa-solid fa-file-invoice-dollar text-green-500 text-lg"></i>
+                    <span class="text-[10px] font-bold">অ্যাড মানি</span>
                 </div>
             </div>
-            <button onclick="navigate('add-money')" class="flex flex-col items-center gap-1">
-                <i class="fa-solid fa-wallet text-green-500 text-lg"></i>
-                <span class="text-[10px] font-bold">অ্যাড মানি</span>
-            </button>
         </div>
-    </div>
 
-    <!-- Banner Slider -->
-    <div class="px-4 mb-4">
-        <div class="rounded-2xl overflow-hidden shadow-sm">
-            <img src="https://i.ibb.co/L5wK60z/man-wow.png" class="w-full h-36 object-cover bg-gradient-to-r from-yellow-400 to-green-500">
+        <!-- Banner -->
+        <div class="px-4 mb-4">
+            <img src="https://telecom-icons.web.app/banner.jpg" class="w-full rounded-2xl h-32 object-cover bg-red-100" alt="Offer Banner">
         </div>
-    </div>
 
-    <!-- Services Grid -->
-    <div class="px-4">
-        <div class="bg-white rounded-2xl p-4 grid grid-cols-4 gap-y-6 card-shadow">
-            <div onclick="showOffers('Internet')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/3132/3132145.png" class="service-icon">
-                <span class="text-[11px] font-bold">ইন্টারনেট</span>
-            </div>
-            <div onclick="showOffers('Bundle')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/3011/3011831.png" class="service-icon">
-                <span class="text-[11px] font-bold">বান্ডেল</span>
-            </div>
-            <div onclick="showOffers('Minute')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/3132/3132128.png" class="service-icon">
-                <span class="text-[11px] font-bold">মিনিট</span>
-            </div>
-            <div onclick="showOffers('MyOffer')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/2854/2854313.png" class="service-icon">
-                <span class="text-[11px] font-bold">মাই অফারস</span>
-            </div>
-            <!-- Second Row -->
-            <div onclick="navigate('bank')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/2830/2830284.png" class="service-icon">
-                <span class="text-[11px] font-bold">ব্যাংক ট্রান্সফার</span>
-            </div>
-            <div onclick="navigate('rocket')" class="flex flex-col items-center">
-                <img src="https://telecom-icons.web.app/rocket.png" class="service-icon">
-                <span class="text-[11px] font-bold">রকেট ট্রান্সফার</span>
-            </div>
-            <div onclick="navigate('recharge')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/4812/4812484.png" class="service-icon">
-                <span class="text-[11px] font-bold">মোবাইল রিচার্জ</span>
-            </div>
-            <div onclick="navigate('add-money')" class="flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/3132/3132148.png" class="service-icon">
-                <span class="text-[11px] font-bold">অ্যাড মানি</span>
+        <!-- Services Grid -->
+        <div class="px-4">
+            <div class="bg-white rounded-2xl p-4 grid grid-cols-4 gap-y-6 card-shadow">
+                <div onclick="openOperators('Internet')" class="flex flex-col items-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3132/3132145.png" class="w-10 h-10 mb-2">
+                    <span class="text-[11px] font-bold">ইন্টারনেট</span>
+                </div>
+                <div onclick="openOperators('Bundle')" class="flex flex-col items-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3011/3011831.png" class="w-10 h-10 mb-2">
+                    <span class="text-[11px] font-bold">বান্ডেল</span>
+                </div>
+                <div onclick="openOperators('Minute')" class="flex flex-col items-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3132/3132128.png" class="w-10 h-10 mb-2">
+                    <span class="text-[11px] font-bold">মিনিট</span>
+                </div>
+                <div onclick="openOperators('SMS')" class="flex flex-col items-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2854/2854313.png" class="w-10 h-10 mb-2">
+                    <span class="text-[11px] font-bold">এসএমএস</span>
+                </div>
+                <div class="flex flex-col items-center opacity-50">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2830/2830284.png" class="w-10 h-10 mb-2">
+                    <span class="text-[11px] font-bold">ব্যাংক</span>
+                </div>
+                <div class="flex flex-col items-center opacity-50">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4812/4812484.png" class="w-10 h-10 mb-2">
+                    <span class="text-[11px] font-bold">রিচার্জ</span>
+                </div>
+                <div class="flex flex-col items-center opacity-50">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3132/3132148.png" class="w-10 h-10 mb-2">
+                    <span class="text-[11px] font-bold">ট্রান্সফার</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3132/3132148.png" class="w-10 h-10 mb-2">
+                    <span class="text-[11px] font-bold">অন্যান্য</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Recent Transactions Header -->
-    <div class="px-5 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-2">
+        <!-- Recent Transactions -->
+        <div class="px-5 py-4 flex justify-between items-center">
             <h3 class="font-bold text-sm">সাম্প্রতিক লেনদেন</h3>
-            <i class="fa-solid fa-rotate-right text-xs text-gray-400"></i>
+            <button class="text-red-600 text-[11px] font-bold">সব দেখুন <i class="fa-solid fa-arrow-right"></i></button>
         </div>
-        <button class="text-red-600 text-[11px] font-bold flex items-center gap-1">
-            সব লেনদেন <i class="fa-solid fa-arrow-right"></i>
-        </button>
+        <div id="transactions" class="px-4 space-y-2">
+            <!-- Transactions will appear here -->
+            <p class="text-center text-xs text-gray-400 py-4">কোনো লেনদেন পাওয়া যায়নি</p>
+        </div>
     </div>
 
-    <!-- Transaction List -->
-    <div id="transaction-list" class="px-4 space-y-2">
-        <div class="bg-white p-3 rounded-xl flex justify-between items-center card-shadow">
-            <div class="flex items-center gap-3">
-                <div class="bg-green-100 text-green-600 w-10 h-10 rounded-full flex items-center justify-center">
-                    <i class="fa-solid fa-sack-dollar"></i>
-                </div>
-                <div>
-                    <p class="text-sm font-bold">ক্যাশব্যাক</p>
-                    <p class="text-[10px] text-gray-400">২২ জানুয়ারি, ০৪:৩৬ PM</p>
-                </div>
+    <!-- VIEW 2: OPERATOR SELECTION -->
+    <div id="view-operators" class="hidden-view p-6">
+        <button onclick="goHome()" class="text-red-600 mb-4 font-bold"><i class="fa-solid fa-arrow-left"></i> ফিরে যান</button>
+        <h3 class="font-bold text-gray-700 mb-6">অপারেটর সিলেক্ট করুন</h3>
+        <div class="grid grid-cols-3 gap-6">
+            <div onclick="selectOperator('GP')" class="flex flex-col items-center">
+                <img src="https://telecom-icons.web.app/gp.png" class="operator-img">
+                <span class="text-xs font-bold">জিপি</span>
             </div>
-            <p class="text-green-600 font-bold text-sm">+ ০.০৫</p>
+            <div onclick="selectOperator('Robi')" class="flex flex-col items-center">
+                <img src="https://telecom-icons.web.app/robi.png" class="operator-img">
+                <span class="text-xs font-bold">রবি</span>
+            </div>
+            <div onclick="selectOperator('Airtel')" class="flex flex-col items-center">
+                <img src="https://telecom-icons.web.app/airtel.png" class="operator-img">
+                <span class="text-xs font-bold">এয়ারটেল</span>
+            </div>
+            <div onclick="selectOperator('Banglalink')" class="flex flex-col items-center">
+                <img src="https://telecom-icons.web.app/bl.png" class="operator-img">
+                <span class="text-xs font-bold">লিংক</span>
+            </div>
+            <div onclick="selectOperator('Teletalk')" class="flex flex-col items-center">
+                <img src="https://telecom-icons.web.app/teletalk.png" class="operator-img">
+                <span class="text-xs font-bold">টেলিটক</span>
+            </div>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
+    <!-- VIEW 3: OFFER LIST -->
+    <div id="view-offers" class="hidden-view p-4">
+        <button onclick="openOperators(currentCategory)" class="text-red-600 mb-4 font-bold"><i class="fa-solid fa-arrow-left"></i> অপারেটর পরিবর্তন</button>
+        <div id="offer-container" class="space-y-3">
+            <!-- Dynamic Offers -->
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
     <div class="bottom-nav">
-        <div onclick="navigate('home')" class="nav-item active">
-            <i class="fa-solid fa-house text-xl"></i>
-            <span>হোম</span>
-        </div>
-        <div onclick="navigate('history')" class="nav-item">
-            <i class="fa-solid fa-list-ul text-xl"></i>
-            <span>লেনদেন</span>
-        </div>
-        <div onclick="navigate('contacts')" class="nav-item">
-            <i class="fa-solid fa-user-group text-xl"></i>
-            <span>কন্টাক্টস</span>
-        </div>
-        <div onclick="navigate('account')" class="nav-item">
-            <i class="fa-solid fa-bars text-xl"></i>
-            <span>আমার নগদ</span>
-        </div>
+        <div onclick="goHome()" class="nav-item active"><i class="fa-solid fa-house text-lg"></i><br>হোম</div>
+        <div class="nav-item"><i class="fa-solid fa-list-ul text-lg"></i><br>লেনদেন</div>
+        <div class="nav-item"><i class="fa-solid fa-user-group text-lg"></i><br>কন্টাক্টস</div>
+        <div class="nav-item"><i class="fa-solid fa-bars text-lg"></i><br>আমার নগদ</div>
     </div>
 
     <script type="module" src="app.js"></script>
