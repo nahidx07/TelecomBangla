@@ -1,17 +1,19 @@
 {
   "name": "telecom-bangla",
-  "version": "2.0.0",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
+  "version": "1.0.0",
   "dependencies": {
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
     "firebase": "latest",
     "lucide-react": "latest",
-    "framer-motion": "latest"
+    "framer-motion": "latest",
+    "clsx": "latest",
+    "tailwind-merge": "latest"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   }
 }
