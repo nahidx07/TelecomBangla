@@ -7,105 +7,99 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Firebase SDK -->
+    <!-- Firebase & Telegram SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* আপনার দেওয়া মূল CSS কোড এখানে (হুবহু) */
-        :root { --primary-blue: #5865f2; --accent-orange: #ff8c7a; --bg-color: #f8faff; --white: #ffffff; --text-main: #2d3436; --text-muted: #636e72; --robi: #d71921; --gp: #007bc3; --bl: #f48220; --airtel: #ed1c24; --teletalk: #78b833; }
+        /* আপনার অরিজিনাল CSS + উন্নত প্রিমিয়াম লুক */
+        :root { --primary-blue: #5865f2; --accent-orange: #ff8c7a; --bg-color: #f8faff; --white: #ffffff; --text-main: #2d3436; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body, html { width: 100%; height: 100%; background-color: var(--bg-color); overflow: hidden; }
+        body { background-color: var(--bg-color); overflow: hidden; }
         .main-wrapper { width: 100%; height: 100vh; display: flex; flex-direction: column; }
-        .app-header { padding: 30px 20px 15px; display: flex; align-items: center; justify-content: space-between; }
-        .profile-section-top { display: flex; align-items: center; gap: 12px; }
-        .user-avatar-top { width: 45px; height: 45px; background: #eee; border-radius: 50%; overflow: hidden; border: 2px solid var(--white); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .user-avatar-top img { width: 100%; height: 100%; object-fit: cover; }
-        .user-info-top h2 { font-size: 14px; color: var(--text-main); font-weight: 700; }
-        .user-info-top p { font-size: 10px; color: var(--text-muted); }
-        #content-view { flex: 1; overflow-y: auto; padding-bottom: 100px; }
-        .balance-section { padding: 5px 20px 15px; }
-        .balance-card { background: var(--white); padding: 18px 22px; border-radius: 22px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
-        .bal-left h3 { font-size: 20px; font-weight: 700; color: var(--text-main); }
-        .offers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px 20px; }
-        .card { background: var(--white); padding: 22px 15px 15px; border-radius: 22px; box-shadow: 0 8px 20px rgba(0,0,0,0.02); position: relative; overflow: hidden; }
-        .op-tag { position: absolute; top: 0; right: 0; padding: 3px 10px; font-size: 8px; font-weight: 800; color: white; border-bottom-left-radius: 12px; text-transform: uppercase; }
-        .tag-robi { background: var(--robi); } .tag-gp { background: var(--gp); } .tag-bl { background: var(--bl); } .tag-airtel { background: var(--airtel); } .tag-teletalk { background: var(--teletalk); }
-        .price-button { margin-top: 15px; width: 100%; border: none; padding: 10px; border-radius: 12px; background: linear-gradient(135deg, #ff8c7a, #ffb399); color: white; font-weight: 700; font-size: 12px; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); height: 85px; display: flex; justify-content: space-around; align-items: center; border-top-left-radius: 35px; border-top-right-radius: 35px; box-shadow: 0 -5px 30px rgba(0,0,0,0.04); padding-bottom: 20px; }
-        .nav-link { text-decoration: none; display: flex; flex-direction: column; align-items: center; color: #b2bec3; flex: 1; cursor: pointer; }
-        .nav-link.active { color: var(--accent-orange); }
-        .fab-home { width: 65px; height: 65px; background: linear-gradient(180deg, #ff8c7a, #ffb399); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-top: -60px; border: 6px solid var(--bg-color); }
         
-        /* Auth UI */
-        #auth-screen { position: fixed; inset: 0; background: var(--bg-color); z-index: 10001; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
-        .auth-box { background: white; width: 100%; max-width: 380px; padding: 30px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); text-align: center; }
-        .auth-input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 15px; outline: none; }
-        .btn-auth { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: var(--primary-blue); color: white; }
+        /* Header & Profile */
+        .app-header { padding: 30px 20px 15px; display: flex; align-items: center; justify-content: space-between; background: white; border-radius: 0 0 30px 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .user-avatar-top { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--white); box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden; }
+        .user-avatar-top img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Content Scroll */
+        #content-view { flex: 1; overflow-y: auto; padding-bottom: 100px; scroll-behavior: smooth; }
+
+        /* Balance Card */
+        .balance-card { background: white; margin: 15px 20px; padding: 22px; border-radius: 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        .bal-left h3 { font-size: 24px; font-weight: 700; color: var(--text-main); }
+        
+        /* Glassmorphism Notice */
+        .notice-board { background: rgba(88, 101, 242, 0.1); margin: 0 20px 15px; padding: 12px 20px; border-radius: 15px; border-left: 4px solid var(--primary-blue); font-size: 11px; color: var(--primary-blue); font-weight: 600; }
+
+        /* Offer Cards */
+        .offers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px; }
+        .card { background: white; padding: 20px; border-radius: 22px; box-shadow: 0 8px 20px rgba(0,0,0,0.02); position: relative; overflow: hidden; }
+        .price-button { margin-top: 15px; width: 100%; border: none; padding: 10px; border-radius: 12px; background: linear-gradient(135deg, #ff8c7a, #ffb399); color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(255,140,122,0.3); }
+
+        /* Navigation */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 85px; background: white; display: flex; justify-content: space-around; align-items: center; border-radius: 35px 35px 0 0; box-shadow: 0 -5px 30px rgba(0,0,0,0.04); }
+        .nav-link { color: #b2bec3; text-align: center; cursor: pointer; transition: 0.3s; }
+        .nav-link.active { color: var(--accent-orange); transform: translateY(-5px); }
+        .fab-home { width: 65px; height: 65px; background: linear-gradient(180deg, #ff8c7a, #ffb399); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-top: -60px; border: 6px solid var(--bg-color); box-shadow: 0 10px 20px rgba(255,140,122,0.4); }
+
+        /* Auth Screen */
+        #auth-screen { position: fixed; inset: 0; background: var(--bg-color); z-index: 10001; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-box { background: white; width: 100%; max-width: 380px; padding: 30px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        .auth-input { width: 100%; padding: 15px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 15px; outline: none; }
         .hidden { display: none !important; }
-        #toast { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 25px; border-radius: 30px; display: none; z-index: 99999; }
+        #toast { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; z-index: 99999; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="toast">প্রসেসিং...</div>
+    <div id="toast"></div>
 
     <!-- Auth Screen -->
     <div id="auth-screen" class="hidden">
-        <div id="login-form" class="auth-box">
-            <h2>লগইন করুন</h2>
-            <input type="email" id="l-email" class="auth-input" placeholder="ইমেইল">
-            <input type="password" id="l-pass" class="auth-input" placeholder="পাসওয়ার্ড">
-            <button class="btn-auth" onclick="handleAuth('login')">লগইন</button>
-            <button class="btn-auth" style="background:#fff; color:#333; border:1.5px solid #eee; margin-top:10px;" onclick="googleLogin()">গুগল লগইন</button>
-            <p style="margin-top:15px; font-size:12px; color:var(--primary-blue); cursor:pointer;" onclick="toggleAuth('signup')">নতুন অ্যাকাউন্ট খুলুন</p>
-        </div>
-        <div id="signup-form" class="auth-box hidden">
-            <h2>নতুন অ্যাকাউন্ট</h2>
+        <div class="auth-box">
+            <h2 style="margin-bottom:20px; text-align:center;">লগইন/রেজিস্ট্রেশন</h2>
             <input type="text" id="s-name" class="auth-input" placeholder="আপনার নাম">
-            <input type="tel" id="s-phone" class="auth-input" placeholder="ফোন নাম্বার">
+            <input type="tel" id="s-phone" class="auth-input" placeholder="মোবাইল নম্বর">
             <input type="email" id="s-email" class="auth-input" placeholder="ইমেইল">
             <input type="password" id="s-pass" class="auth-input" placeholder="পাসওয়ার্ড">
-            <button class="btn-auth" onclick="handleAuth('signup')">তৈরি করুন</button>
-            <p style="margin-top:15px; font-size:12px; color:var(--primary-blue); cursor:pointer;" onclick="toggleAuth('login')">লগইন করুন</p>
+            <button onclick="handleManualAuth()" style="width:100%; padding:15px; background:var(--primary-blue); color:white; border:none; border-radius:15px; font-weight:700;">প্রবেশ করুন</button>
+            <p style="text-align:center; margin-top:15px; font-size:12px; color:#888;">অথবা গুগল দিয়ে লগইন করুন</p>
         </div>
     </div>
 
     <!-- Main App -->
     <div id="main-app" class="main-wrapper hidden">
         <header class="app-header">
-            <div class="profile-section-top">
+            <div style="display:flex; align-items:center; gap:12px;">
                 <div class="user-avatar-top"><img id="u-img" src=""></div>
-                <div class="user-info-top">
-                    <h2 id="u-id-display">ID: ...</h2>
-                    <p id="u-name-display">Name</p>
+                <div>
+                    <h2 id="u-name" style="font-size:14px; font-weight:700;">...</h2>
+                    <p id="u-id" style="font-size:10px; color:#888;">ID: ...</p>
                 </div>
             </div>
-            <i class="far fa-bell" onclick="showToast('নোটিফিকেশন নেই')"></i>
+            <i class="far fa-bell" style="font-size:18px; color:#444;" onclick="showToast('কোন নতুন নোটিশ নেই')"></i>
         </header>
-        <div id="content-view"></div>
+
+        <div id="content-view">
+            <!-- Home View Load Initially -->
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-link" onclick="switchView('recharge', this)"><i class="fas fa-bolt"></i><p style="font-size:9px;">Recharge</p></div>
+            <div class="nav-link" onclick="switchView('offers', this)"><i class="fas fa-gift"></i><p style="font-size:9px;">Offers</p></div>
+            <div class="fab-home" onclick="switchView('home', null)"><i class="fas fa-home"></i></div>
+            <div class="nav-link" onclick="switchView('history', this)"><i class="fas fa-history"></i><p style="font-size:9px;">History</p></div>
+            <div class="nav-link" onclick="switchView('account', this)"><i class="fas fa-user"></i><p style="font-size:9px;">Account</p></div>
+        </nav>
     </div>
 
-    <nav class="bottom-nav hidden" id="nav-bar">
-        <a class="nav-link" onclick="switchView('recharge', this)"><i class="fas fa-bolt"></i><span>Recharge</span></a>
-        <a class="nav-link" onclick="switchView('offers', this)"><i class="fas fa-gift"></i><span>Offers</span></a>
-        <div class="fab-home" onclick="switchView('home', null)"><i class="fas fa-home"></i></div>
-        <a class="nav-link" onclick="switchView('history', this)"><i class="fas fa-history"></i><span>History</span></a>
-        <a class="nav-link" onclick="switchView('account', this)"><i class="fas fa-user"></i><span>Account</span></a>
-    </nav>
-
     <script>
-        // --- ফায়ারবেস সেটিংস ---
-        const firebaseConfig = {
-  apiKey: "AIzaSyCbYJQ9y9CJKiT5aJyrIA0pFRGy1uvZikA",
-  authDomain: "telicombangla-1.firebaseapp.com",
-  projectId: "telicombangla-1",
-  storageBucket: "telicombangla-1.firebasestorage.app",
-  messagingSenderId: "1020351520674",
-  appId: "1:1020351520674:web:c84659bc5ca2f6b41edcfb"
-};
+        // --- Firebase Configuration ---
+        const firebaseConfig = { apiKey: "YOUR_API", authDomain: "YOUR_AUTH", projectId: "YOUR_ID", storageBucket: "YOUR_BUCKET", messagingSenderId: "YOUR_SENDER", appId: "YOUR_APP" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
@@ -114,90 +108,127 @@
         let currentUser = null;
 
         // ১. অটো লগইন এবং ডাটা সিঙ্ক
-        function checkLogin() {
+        function init() {
             if (tg.initDataUnsafe?.user) {
                 const u = tg.initDataUnsafe.user;
-                syncUser(u.id, u.first_name, u.photo_url, "");
+                // প্রোফাইল পিকচার এবং আইডি দিয়ে সিঙ্ক
+                syncUser(u.id, u.first_name, u.photo_url || "");
             } else {
                 auth.onAuthStateChanged(user => {
-                    if (user) syncUser(user.uid, user.displayName || "User", user.photoURL, "");
+                    if (user) syncUser(user.uid, user.displayName || "User", user.photoURL || "");
                     else document.getElementById('auth-screen').classList.remove('hidden');
                 });
             }
         }
 
-        async function syncUser(uid, name, photo, phone) {
+        async function syncUser(uid, name, photo) {
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('nav-bar').classList.remove('hidden');
 
             const ref = db.collection('users').doc(uid.toString());
             const doc = await ref.get();
+
             if (!doc.exists) {
-                await ref.set({ id: uid, name, photo: photo || 'https://i.pravatar.cc/150', phone, balance: 0, role: 'user' });
+                await ref.set({ id: uid, name, photo: photo || 'https://i.pravatar.cc/150', balance: 0, role: 'user', createdAt: new Date() });
             }
+
             ref.onSnapshot(s => {
                 currentUser = s.data();
-                document.getElementById('u-id-display').innerText = "ID: " + currentUser.id;
-                document.getElementById('u-name-display').innerText = currentUser.name;
+                document.getElementById('u-name').innerText = currentUser.name;
+                document.getElementById('u-id').innerText = "ID: " + currentUser.id;
                 document.getElementById('u-img').src = currentUser.photo;
-                renderView('home');
+                renderHome();
             });
         }
 
-        // ২. ভিউ কন্ট্রোল (আপনার অরিজিনাল কোড ফরম্যাটে)
+        // ২. ভিউ রেন্ডারিং
         function switchView(v, el) {
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             if(el) el.classList.add('active');
-            renderView(v);
+            
+            if(v === 'home') renderHome();
+            else if(v === 'offers') renderOffers();
+            else if(v === 'history') renderHistory();
+            else if(v === 'account') renderAccount();
+            else if(v === 'recharge') renderRecharge();
         }
 
-        function renderView(v) {
-            const container = document.getElementById('content-view');
-            if(v === 'home') {
-                container.innerHTML = `
-                <div class="balance-section"><div class="balance-card"><div class="bal-left"><p>Available Balance</p><h3>৳ ${currentUser.balance}</h3></div><div class="add-money-btn" onclick="showToast('Add Money খুলেছে')"><i class="fas fa-plus-circle"></i> Add Money</div></div></div>
-                <div style="display:flex; justify-content:space-between; padding:10px 20px;">
-                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-tag"></i></div><span style="font-size:9px; font-weight:600;">My Offer</span></div>
-                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-globe"></i></div><span style="font-size:9px; font-weight:600;">Data</span></div>
-                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-phone-alt"></i></div><span style="font-size:9px; font-weight:600;">Minute</span></div>
-                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-comment-dots"></i></div><span style="font-size:9px; font-weight:600;">SMS</span></div>
+        function renderHome() {
+            document.getElementById('content-view').innerHTML = `
+                <div class="balance-card">
+                    <div class="bal-left"><p style="font-size:11px; color:#888;">মোট ব্যালেন্স</p><h3>৳ ${currentUser.balance}</h3></div>
+                    <div style="background:var(--primary-blue); color:white; padding:10px 18px; border-radius:15px; font-size:12px; font-weight:700;" onclick="showToast('Add Money coming soon')">Add Money</div>
                 </div>
-                <div class="offers-grid" id="offers-list"></div>`;
-                fetchOffers();
-            } else if(v === 'offers') {
-                container.innerHTML = `<div class="op-grid-3"><div class="op-card-mini active">All Offer</div><div class="op-card-mini">Robi</div><div class="op-card-mini">GP</div></div><div class="offers-grid" id="offers-list"></div>`;
-                fetchOffers();
-            }
+                <div class="notice-board"><i class="fas fa-bullhorn"></i> অফার ক্রয়ের ১-১০ মিনিটের মধ্যে রিচার্জ সাকসেস হবে।</div>
+                <div style="padding:0 20px 10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:700; font-size:14px;">সেরা অফারসমূহ</span>
+                    <span style="font-size:12px; color:var(--primary-blue);" onclick="switchView('offers')">সব দেখুন</span>
+                </div>
+                <div class="offers-grid" id="h-offers"></div>
+            `;
+            loadOffers('h-offers', 4);
         }
 
-        function fetchOffers() {
-            db.collection('offers').onSnapshot(snap => {
+        function loadOffers(id, limit) {
+            db.collection('offers').limit(limit).onSnapshot(snap => {
                 let html = '';
                 snap.forEach(doc => {
                     const o = doc.data();
-                    html += `<div class="card"><span class="op-tag tag-${o.operator.toLowerCase()}">${o.operator}</span><div class="card-title">${o.title}</div><div class="validity">${o.validity} মেয়াদ</div><button class="price-button" onclick="showToast('অর্ডার প্রসেসিং...')">৳ ${o.price}</button></div>`;
+                    html += `
+                        <div class="card">
+                            <span style="position:absolute; top:0; right:0; padding:4px 10px; background:var(--primary-blue); color:white; font-size:8px; border-radius:0 0 0 12px;">${o.operator}</span>
+                            <div style="font-weight:700; font-size:11px; color:#333;">${o.title}</div>
+                            <div style="font-size:9px; color:#888; margin-top:5px;">মেয়াদ: ${o.validity} দিন</div>
+                            <button class="price-button" onclick="buyOffer('${doc.id}', ${o.price})">৳ ${o.price}</button>
+                        </div>`;
                 });
-                document.getElementById('offers-list').innerHTML = html;
+                document.getElementById(id).innerHTML = html;
             });
         }
 
-        // ৩. অথেনটিকেশন লজিক
-        function handleAuth(type) {
-            const email = (type === 'login' ? document.getElementById('l-email') : document.getElementById('s-email')).value;
-            const pass = (type === 'login' ? document.getElementById('l-pass') : document.getElementById('s-pass')).value;
-            if (type === 'login') auth.signInWithEmailAndPassword(email, pass).catch(e => showToast(e.message));
-            else {
-                const name = document.getElementById('s-name').value;
-                const phone = document.getElementById('s-phone').value;
-                auth.createUserWithEmailAndPassword(email, pass).then(r => syncUser(r.user.uid, name, "", phone)).catch(e => showToast(e.message));
-            }
+        function renderHistory() {
+            document.getElementById('content-view').innerHTML = `<div style="padding:20px;"><h3 style="margin-bottom:15px;">লেনদেনের ইতিহাস</h3><div id="hist-list">লোডিং...</div></div>`;
+            db.collection('orders').where('userId', '==', currentUser.id).orderBy('createdAt', 'desc').onSnapshot(snap => {
+                let html = '';
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div style="background:white; padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 5px 15px rgba(0,0,0,0.02);">
+                            <div><p style="font-size:12px; font-weight:700;">${data.title}</p><p style="font-size:10px; color:#888;">${data.number}</p></div>
+                            <div style="text-align:right;"><p style="font-size:12px; font-weight:700; color:var(--primary-blue);">৳ ${data.price}</p><span style="font-size:9px; padding:2px 8px; border-radius:10px; background:#eee;">${data.status}</span></div>
+                        </div>`;
+                });
+                document.getElementById('hist-list').innerHTML = html || 'কোন হিস্ট্রি পাওয়া যায়নি।';
+            });
         }
-        function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-        function toggleAuth(v) { document.getElementById('login-form').classList.toggle('hidden', v==='signup'); document.getElementById('signup-form').classList.toggle('hidden', v==='login'); }
-        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000); }
 
-        window.onload = checkLogin;
+        async function buyOffer(id, price) {
+            if(currentUser.balance < price) return showToast('পর্যাপ্ত ব্যালেন্স নেই!');
+            const num = prompt("আপনার মোবাইল নম্বর দিন:");
+            if(!num) return;
+
+            showToast('অর্ডার সাবমিট হচ্ছে...');
+            await db.collection('orders').add({
+                userId: currentUser.id,
+                title: 'অফার ক্রয়',
+                price: price,
+                number: num,
+                status: 'Pending',
+                createdAt: new Date()
+            });
+            await db.collection('users').doc(currentUser.id.toString()).update({
+                balance: currentUser.balance - price
+            });
+            showToast('অর্ডার সফল হয়েছে!');
+        }
+
+        function showToast(m) {
+            const t = document.getElementById('toast');
+            t.innerText = m; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 2500);
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
