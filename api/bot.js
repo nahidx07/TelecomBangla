@@ -1,58 +1,27 @@
-const { Telegraf, Markup } = require('telegraf');
-const admin = require('firebase-admin');
-
-// Firebase Initialization
-if (!admin.apps.length) {
-    try {
-        admin.initializeApp({
-            credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))
-        });
-    } catch (e) {
-        console.error('Firebase Admin Error:', e);
-    }
-}
-const db = admin.firestore();
-const bot = new Telegraf(process.env.BOT_TOKEN);
-
 bot.start(async (ctx) => {
+    const { id, first_name } = ctx.from;
+    
+    // ইউজারের প্রোফাইল পিকচার ইউআরএল সরাসরি বের করা
+    let photo_url = 'https://i.pravatar.cc/150'; 
     try {
-        const { id, first_name, last_name, photo_url } = ctx.from;
-        const name = first_name + (last_name ? " " + last_name : "");
-
-        // ইউজার ডাটা সেভ
-        await db.collection('users').doc(id.toString()).set({
-            id: id,
-            name: name,
-            photo: photo_url || '',
-            balance: 0,
-            role: 'user'
-        }, { merge: true });
-
-        // এডমিন থেকে চ্যানেল লিংক আনা
-        const config = await db.collection('settings').doc('config').get();
-        const channelBtnUrl = config.exists ? config.data().channelLink : "https://t.me/YourChannel";
-
-        const msg = `<b>স্বাগতম ${name}!</b>\n\nআপনার আইডি কোড: <code>${id}</code>\n\nচ্যানেলে জয়েন করুন:`;
-
-        return ctx.replyWithHTML(msg, Markup.inlineKeyboard([
-            [Markup.button.url('📢 জয়েন চ্যানেল', channelBtnUrl)]
-        ]));
-    } catch (err) {
-        console.error('Bot Start Error:', err);
-    }
-});
-
-// Vercel Serverless Function Handler
-module.exports = async (req, res) => {
-    if (req.method === 'POST') {
-        try {
-            await bot.handleUpdate(req.body);
-            res.status(200).send('OK');
-        } catch (err) {
-            console.error(err);
-            res.status(500).send('Error');
+        const photos = await ctx.telegram.getUserProfilePhotos(id);
+        if (photos.total_count > 0) {
+            const fileId = photos.photos[0][0].file_id;
+            const file = await ctx.telegram.getFile(fileId);
+            photo_url = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`;
         }
-    } else {
-        res.status(200).send('Bot is running...');
-    }
-};
+    } catch (e) { console.log("Photo error", e); }
+
+    // ডাটাবেসে সেভ (ফটোসহ)
+    const userRef = db.collection('users').doc(id.toString());
+    await userRef.set({
+        id: id,
+        name: first_name,
+        photo: photo_url,
+        balance: 0
+    }, { merge: true });
+
+    ctx.replyWithHTML(`<b>স্বাগতম ${first_name}!</b>\nআইডি: ${id}`, Markup.inlineKeyboard([
+        [Markup.button.url('📢 জয়েন চ্যানেল', 'https://t.me/YourChannel')]
+    ]));
+});
