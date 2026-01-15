@@ -1,57 +1,66 @@
-
-import { db } from './firebase-config.js';
-import { collection, getDocs, query, where, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { db, auth, provider, signInWithPopup } from './firebase-config.js';
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const tg = window.Telegram.WebApp;
-tg.expand();
+const loginScreen = document.getElementById('login-screen');
+const mainApp = document.getElementById('main-app');
 
-let currentOp = "";
-
-async function initUser() {
-    const user = tg.initDataUnsafe?.user;
-    if (user) {
-        document.getElementById('user-name').innerText = user.first_name;
-        document.getElementById('user-id').innerText = user.id;
-        document.getElementById('user-pic').src = user.photo_url || "https://via.placeholder.com/150";
-
-        const userRef = doc(db, "users", user.id.toString());
-        const snap = await getDoc(userRef);
-
-        if (!snap.exists()) {
-            await setDoc(userRef, { name: user.first_name, balance: 0, id: user.id });
+// ১. চেক করা ইউজার টেলিগ্রামে আছে কি না
+if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    // টেলিগ্রাম অটো লগইন
+    const tgUser = tg.initDataUnsafe.user;
+    handleUserAuth(tgUser.id.toString(), tgUser.first_name, tgUser.photo_url || "https://via.placeholder.com/150");
+} else {
+    // ওয়েবসাইট/অ্যাপ মোড: ফায়ারবেস Auth চেক করা
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            handleUserAuth(user.uid, user.displayName, user.photoURL);
         } else {
-            document.getElementById('balance').innerText = snap.data().balance;
+            loginScreen.style.display = "flex"; // লগইন পেজ দেখাবে
         }
+    });
+}
+
+// ২. ইউজার ডাটাবেস হ্যান্ডলার (অটো রেজিস্ট্রেশন ও ডেটা লোড)
+async function handleUserAuth(uid, name, photo) {
+    loginScreen.style.display = "none";
+    mainApp.style.display = "block";
+
+    const userRef = doc(db, "users", uid);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+        // নতুন ইউজার হলে ডাটাবেসে সেভ করা (অটো রেজিস্ট্রেশন)
+        const userData = {
+            id: uid,
+            name: name,
+            photo: photo,
+            balance: 0,
+            role: "user",
+            createdAt: new Date()
+        };
+        await setDoc(userRef, userData);
+        updateUI(userData);
+    } else {
+        // পুরাতন ইউজার হলে ডাটা আপডেট করা
+        updateUI(snap.data());
     }
 }
 
-window.selectOp = (op) => {
-    currentOp = op;
-    document.getElementById('op-title').innerText = op + " এর ক্যাটাগরি";
-    document.getElementById('offer-section').classList.remove('hidden');
-};
+// ৩. ইউআই আপডেট
+function updateUI(data) {
+    document.getElementById('user-name').innerText = data.name;
+    document.getElementById('user-id').innerText = data.id.substring(0, 6); // ছোট আইডি দেখানো
+    document.getElementById('user-pic').src = data.photo;
+    document.getElementById('balance').innerText = data.balance.toFixed(2);
+}
 
-window.loadOffers = async (cat) => {
-    const list = document.getElementById('offer-list');
-    list.innerHTML = "লোড হচ্ছে...";
-    
-    const q = query(collection(db, "offers"), where("operator", "==", currentOp), where("category", "==", cat));
-    const snap = await getDocs(q);
-    
-    list.innerHTML = "";
-    snap.forEach(doc => {
-        const data = doc.data();
-        list.innerHTML += `
-            <div class="bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center">
-                <div>
-                    <h4 class="font-bold text-gray-800">${data.title}</h4>
-                    <p class="text-[10px] text-gray-400">মেয়াদ: ${data.validity}</p>
-                    <p class="text-blue-600 font-bold">৳ ${data.price}</p>
-                </div>
-                <button class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold">কিনুন</button>
-            </div>
-        `;
-    });
+// ৪. গুগল লগইন বাটন (শুধু ওয়েবসাইটের জন্য)
+document.getElementById('google-login').onclick = async () => {
+    try {
+        await signInWithPopup(auth, provider);
+    } catch (error) {
+        alert("লগইন ব্যর্থ হয়েছে: " + error.message);
+    }
 };
-
-initUser();
