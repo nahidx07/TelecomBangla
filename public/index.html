@@ -4,65 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Premium Operator App</title>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Firebase SDK -->
+    
+    <!-- Firebase SDK (নতুন যোগ করা হয়েছে) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <!-- Telegram WebApp SDK (নতুন যোগ করা হয়েছে) -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
+
     <style>
-        /* আপনার দেওয়া CSS এখানে হুবহু থাকবে */
-        :root { --primary-blue: #5865f2; --accent-orange: #ff8c7a; --bg-color: #f8faff; --white: #ffffff; --text-main: #2d3436; --text-muted: #636e72; --robi: #d71921; --gp: #007bc3; --bl: #f48220; --airtel: #ed1c24; --teletalk: #78b833; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-color); overflow-x: hidden; }
-        .main-wrapper { width: 100%; min-height: 100vh; padding-bottom: 100px; }
+        /* আপনার দেওয়া সম্পূর্ণ CSS এখানে (কোনো পরিবর্তন নেই) */
+        :root {
+            --primary-blue: #5865f2; --accent-orange: #ff8c7a; --bg-color: #f8faff;
+            --white: #ffffff; --text-main: #2d3436; --text-muted: #636e72;
+            --robi: #d71921; --gp: #007bc3; --bl: #f48220; --airtel: #ed1c24; --teletalk: #78b833;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body, html { width: 100%; height: 100%; background-color: var(--bg-color); overflow: hidden; }
+        .main-wrapper { width: 100%; height: 100vh; display: flex; flex-direction: column; }
         .app-header { padding: 30px 20px 15px; display: flex; align-items: center; justify-content: space-between; }
         .profile-section-top { display: flex; align-items: center; gap: 12px; }
         .user-avatar-top { width: 45px; height: 45px; background: #eee; border-radius: 50%; overflow: hidden; border: 2px solid var(--white); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .user-avatar-top img { width: 100%; height: 100%; object-fit: cover; }
-        .balance-card { background: var(--white); margin: 0 20px; padding: 18px 22px; border-radius: 22px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
-        .offers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 20px; }
-        .card { background: var(--white); padding: 22px 15px 15px; border-radius: 22px; position: relative; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.02); }
-        .op-tag { position: absolute; top: 0; right: 0; padding: 3px 10px; font-size: 8px; color: white; border-bottom-left-radius: 12px; text-transform: uppercase; }
-        .price-button { margin-top: 15px; width: 100%; border: none; padding: 10px; border-radius: 12px; background: linear-gradient(135deg, #ff8c7a, #ffb399); color: white; font-weight: 700; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; height: 80px; display: flex; justify-content: space-around; align-items: center; border-radius: 30px 30px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; display: none; z-index: 10000; }
+        .user-info-top h2 { font-size: 14px; color: var(--text-main); font-weight: 700; }
+        .user-info-top p { font-size: 10px; color: var(--text-muted); }
+        .header-actions { font-size: 18px; color: #444; }
+        #content-view { flex: 1; overflow-y: auto; padding-bottom: 100px; }
+        .balance-section { padding: 5px 20px 15px; }
+        .balance-card { background: var(--white); padding: 18px 22px; border-radius: 22px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
+        .bal-left p { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+        .bal-left h3 { font-size: 20px; font-weight: 700; color: var(--text-main); }
+        .add-money-btn { background: var(--primary-blue); color: white; padding: 10px 18px; border-radius: 14px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .op-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px 15px 20px; }
+        .op-card-mini { background: var(--white); height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02); font-size: 11px; font-weight: 700; text-align: center; border: 1px solid rgba(0,0,0,0.03); cursor: pointer; }
+        .op-card-mini.active { background: var(--primary-blue); color: white; border: none; }
+        .offers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px 20px; }
+        .card { background: var(--white); padding: 22px 15px 15px; border-radius: 22px; box-shadow: 0 8px 20px rgba(0,0,0,0.02); position: relative; overflow: hidden; }
+        .op-tag { position: absolute; top: 0; right: 0; padding: 3px 10px; font-size: 8px; font-weight: 800; color: white; border-bottom-left-radius: 12px; text-transform: uppercase; }
+        .tag-robi { background: var(--robi); } .tag-gp { background: var(--gp); } .tag-bl { background: var(--bl); } .tag-airtel { background: var(--airtel); } .tag-teletalk { background: var(--teletalk); }
+        .card-title { font-weight: 700; font-size: 11px; display: flex; align-items: center; gap: 5px; color: #333; margin-top: 5px; }
+        .validity { font-size: 9px; color: var(--text-muted); margin-top: 5px; font-weight: 500; }
+        .price-button { margin-top: 15px; width: 100%; border: none; padding: 10px; border-radius: 12px; background: linear-gradient(135deg, #ff8c7a, #ffb399); color: white; font-weight: 700; font-size: 12px; box-shadow: 0 4px 12px rgba(255,140,122,0.2); }
+        .recharge-container { padding: 15px 20px; }
+        .input-group { margin-bottom: 20px; }
+        .label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+        .input-box { width: 100%; background: var(--white); border: 1.5px solid rgba(0,0,0,0.05); padding: 15px; border-radius: 18px; font-size: 15px; font-weight: 600; outline: none; }
+        .op-pill { background: var(--white); padding: 12px; border-radius: 14px; text-align: center; font-size: 10px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border: 1.5px solid transparent; }
+        .op-pill.active { border-color: var(--primary-blue); color: var(--primary-blue); background: #f0f3ff; }
+        .action-btn { width: 100%; background: linear-gradient(135deg, #5865f2, #8e94f2); color: white; border: none; padding: 16px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); height: 85px; display: flex; justify-content: space-around; align-items: center; border-top-left-radius: 35px; border-top-right-radius: 35px; box-shadow: 0 -5px 30px rgba(0,0,0,0.04); padding-bottom: 20px; z-index: 1000; }
+        .nav-link { text-decoration: none; display: flex; flex-direction: column; align-items: center; color: #b2bec3; flex: 1; cursor: pointer; }
+        .nav-link i { font-size: 20px; margin-bottom: 4px; }
+        .nav-link span { font-size: 9px; font-weight: 700; }
+        .nav-link.active { color: var(--accent-orange); }
+        .fab-home { width: 65px; height: 65px; background: linear-gradient(180deg, #ff8c7a, #ffb399); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 26px; margin-top: -60px; border: 6px solid var(--bg-color); box-shadow: 0 10px 20px rgba(255, 140, 122, 0.4); cursor: pointer; }
+        #toast { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: white; padding: 12px 25px; border-radius: 30px; font-size: 12px; z-index: 9999; display: none; }
     </style>
 </head>
 <body>
+
     <div id="toast">প্রসেসিং...</div>
+
     <div class="main-wrapper">
         <header class="app-header">
             <div class="profile-section-top">
-                <div class="user-avatar-top"><img id="u-img" src="" alt=""></div>
+                <!-- ডাইনামিক ইমেজ এবং টেক্সট -->
+                <div class="user-avatar-top"><img id="user-img" src="" alt=""></div>
                 <div class="user-info-top">
-                    <h2 id="u-id">Loading...</h2>
-                    <p id="u-name">Please wait</p>
+                    <h2 id="user-id">0000000000</h2>
+                    <p id="user-name">Loading...</p>
                 </div>
+            </div>
+            <div class="header-actions">
+                <i class="far fa-bell" onclick="showToast('নোটিফিকেশন নেই')"></i>
             </div>
         </header>
 
-        <div class="balance-card">
-            <div class="bal-left"><p>Available Balance</p><h3 id="u-bal">৳ ০.০০</h3></div>
-            <div class="add-money-btn" style="background:var(--primary-blue); color:white; padding:8px 15px; border-radius:12px; font-size:12px;">Add Money</div>
-        </div>
-
-        <div id="content-area">
-            <div class="offers-grid" id="offers-list">
-                <!-- অফারগুলো এখান থেকে লোড হবে -->
-            </div>
+        <div id="content-view">
+            <!-- ডাইনামিক কন্টেন্ট এখানে লোড হবে -->
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <div onclick="location.reload()"><i class="fas fa-home"></i></div>
-        <div onclick="showToast('History coming soon')"><i class="fas fa-history"></i></div>
-        <div onclick="showToast('Account Settings')"><i class="fas fa-user"></i></div>
+        <a class="nav-link" id="nav-rec" onclick="switchView('recharge', this)"><i class="fas fa-bolt"></i><span>Recharge</span></a>
+        <a class="nav-link" onclick="switchView('offers', this)"><i class="fas fa-gift"></i><span>Offers</span></a>
+        <div class="fab-home" onclick="switchView('home', null)"><i class="fas fa-home"></i></div>
+        <a class="nav-link" onclick="switchView('history', this)"><i class="fas fa-history"></i><span>History</span></a>
+        <a class="nav-link" onclick="switchView('account', this)"><i class="fas fa-user"></i><span>Account</span></a>
     </nav>
 
     <script>
-        // Firebase Configuration (Replace with your actual config)
+        // --- ফায়ারবেস কনফিগ ---
         const firebaseConfig = {
   apiKey: "AIzaSyCbYJQ9y9CJKiT5aJyrIA0pFRGy1uvZikA",
   authDomain: "telicombangla-1.firebaseapp.com",
@@ -74,46 +109,134 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // --- টেলিগ্রাম ডাটা ---
         const tg = window.Telegram.WebApp;
         tg.expand();
-        const user = tg.initDataUnsafe?.user;
+        const tgUser = tg.initDataUnsafe?.user;
 
-        if(user) {
-            // ইউজারের রিয়েল-টাইম ডাটা লোড
-            db.collection('users').doc(user.id.toString()).onSnapshot(doc => {
-                if(doc.exists) {
-                    const data = doc.data();
-                    document.getElementById('u-id').innerText = data.id;
-                    document.getElementById('u-name').innerText = data.name;
-                    document.getElementById('u-img').src = data.photo;
-                    document.getElementById('u-bal').innerText = '৳ ' + data.balance;
+        const contentView = document.getElementById('content-view');
+        let userData = { balance: 0, name: 'User', id: '0' };
+
+        // --- ইউজারের ডাটাবেস থেকে তথ্য আনা ---
+        if (tgUser) {
+            db.collection('users').doc(tgUser.id.toString()).onSnapshot(doc => {
+                if (doc.exists) {
+                    userData = doc.data();
+                    document.getElementById('user-id').innerText = userData.id;
+                    document.getElementById('user-name').innerText = userData.name;
+                    document.getElementById('user-img').src = userData.photo || 'https://i.pravatar.cc/150';
+                    if (document.getElementById('balance-amount')) {
+                        document.getElementById('balance-amount').innerText = '৳ ' + userData.balance;
+                    }
                 }
             });
         }
 
-        // অফার লোড করা
-        db.collection('offers').onSnapshot(snapshot => {
-            let html = '';
-            snapshot.forEach(doc => {
-                const off = doc.data();
-                html += `
-                <div class="card">
-                    <span class="op-tag" style="background:var(--${off.operator.toLowerCase()})">${off.operator}</span>
-                    <div style="font-weight:700; font-size:11px;">${off.title}</div>
-                    <div style="font-size:9px; color:#666;">${off.validity}</div>
-                    <button class="price-button" onclick="buy('${doc.id}')">৳ ${off.price}</button>
-                </div>`;
-            });
-            document.getElementById('offers-list').innerHTML = html;
-        });
-
-        function showToast(m) { 
-            const t = document.getElementById('toast'); 
-            t.innerText = m; t.style.display = 'block'; 
-            setTimeout(() => t.style.display = 'none', 2000); 
+        // --- হোম ভিউ ---
+        function renderHome() {
+            contentView.innerHTML = `
+                <div class="balance-section">
+                    <div class="balance-card">
+                        <div class="bal-left"><p>Available Balance</p><h3 id="balance-amount">৳ ${userData.balance}</h3></div>
+                        <div class="add-money-btn" onclick="showToast('Add Money খুলেছে')"><i class="fas fa-plus-circle"></i> Add Money</div>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:10px 20px;">
+                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-tag"></i></div><span style="font-size:9px; font-weight:600;">My Offer</span></div>
+                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-globe"></i></div><span style="font-size:9px; font-weight:600;">Data</span></div>
+                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-phone-alt"></i></div><span style="font-size:9px; font-weight:600;">Minute</span></div>
+                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-comment-dots"></i></div><span style="font-size:9px; font-weight:600;">SMS</span></div>
+                </div>
+                <div class="offers-grid" id="home-offers">
+                    <!-- অফারগুলো ফায়ারবেস থেকে আসবে -->
+                </div>
+            `;
+            loadOffers('home-offers', 2); // হোমে ২টা অফার দেখাবে
         }
 
-        function buy(id) { showToast('অর্ডার প্রসেসিং হচ্ছে...'); }
+        // --- অফার ভিউ ---
+        function renderOffers() {
+            contentView.innerHTML = `
+                <div class="op-grid-3">
+                    <div class="op-card-mini active" onclick="loadOffers('all-offers', 20)">All Offer</div>
+                    <div class="op-card-mini" onclick="loadOffers('all-offers', 20, 'Robi')">Robi</div>
+                    <div class="op-card-mini" onclick="loadOffers('all-offers', 20, 'GP')">GP</div>
+                    <div class="op-card-mini" onclick="loadOffers('all-offers', 20, 'Banglalink')">Banglalink</div>
+                    <div class="op-card-mini" onclick="loadOffers('all-offers', 20, 'Airtel')">Airtel</div>
+                    <div class="op-card-mini" onclick="loadOffers('all-offers', 20, 'Teletalk')">Teletalk</div>
+                </div>
+                <div class="offers-grid" id="all-offers"></div>
+            `;
+            loadOffers('all-offers', 20);
+        }
+
+        // --- ফায়ারবেস থেকে অফার লোড করার ফাংশন ---
+        function loadOffers(containerId, limit, operator = null) {
+            let query = db.collection('offers');
+            if (operator) query = query.where('operator', '==', operator);
+            
+            query.limit(limit).onSnapshot(snapshot => {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                let html = '';
+                snapshot.forEach(doc => {
+                    const offer = doc.data();
+                    html += `
+                        <div class="card">
+                            <span class="op-tag tag-${offer.operator.toLowerCase()}">${offer.operator}</span>
+                            <div class="card-title"><i class="fas fa-bolt"></i> ${offer.title}</div>
+                            <div class="validity">${offer.validity}</div>
+                            <button class="price-button" onclick="buyOffer('${doc.id}', ${offer.price})">৳ ${offer.price}</button>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        // --- ভিউ সুইচিং লজিক ---
+        function switchView(v, el) {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            if(el) el.classList.add('active');
+            
+            if(v === 'home') renderHome();
+            else if(v === 'offers') renderOffers();
+            else if(v === 'recharge') {
+                contentView.innerHTML = `
+                    <div class="recharge-container">
+                        <h3 style="font-size:17px; text-align:center; margin-bottom:25px;">মোবাইল রিচার্জ</h3>
+                        <div class="input-group"><label class="label">নম্বর দিন</label><input type="tel" id="rec-num" class="input-box" placeholder="01XXXXXXXXX"></div>
+                        <div class="input-group">
+                            <label class="label">অপারেটর সিলেক্ট করুন</label>
+                            <div class="op-select-row">
+                                <div class="op-pill" onclick="selOp(this, 'Robi')">Robi</div>
+                                <div class="op-pill" onclick="selOp(this, 'GP')">GP</div>
+                                <div class="op-pill" onclick="selOp(this, 'Banglalink')">Banglalink</div>
+                                <div class="op-pill" onclick="selOp(this, 'Airtel')">Airtel</div>
+                                <div class="op-pill" onclick="selOp(this, 'Teletalk')">Teletalk</div>
+                            </div>
+                        </div>
+                        <div class="input-group"><label class="label">টাকার পরিমাণ</label><input type="number" id="rec-amount" class="input-box" placeholder="৳ 0.00"></div>
+                        <button class="action-btn" onclick="processRecharge()">রিচার্জ করুন</button>
+                    </div>
+                `;
+            }
+            else if(v === 'account') {
+                contentView.innerHTML = `<div class="account-page" style="padding:20px;"><div style="background:linear-gradient(135deg,#7b88ff,#5865f2); border-radius:25px; padding:25px; color:white; display:flex; align-items:center; gap:20px;"><div style="width:70px; height:70px; border-radius:50%; overflow:hidden; border:2px solid white;"><img src="${userData.photo}" style="width:100%;"></div><div><h2 style="font-size:16px;">${userData.name}</h2><p style="font-size:11px; opacity:0.9;">${userData.id}</p></div></div></div>`;
+            }
+        }
+
+        let selectedOp = '';
+        function selOp(el, op) { 
+            document.querySelectorAll('.op-pill').forEach(p => p.classList.remove('active')); 
+            el.classList.add('active'); 
+            selectedOp = op;
+        }
+
+        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 1800); }
+
+        // ডিফল্ট হোম ভিউ
+        switchView('home');
     </script>
 </body>
 </html>
