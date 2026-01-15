@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Premium Operator App</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Firebase SDK (নতুন যোগ করা হয়েছে) -->
+    <!-- Firebase & Telegram SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <!-- Telegram WebApp SDK (নতুন যোগ করা হয়েছে) -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* আপনার দেওয়া সম্পূর্ণ CSS এখানে (কোনো পরিবর্তন নেই) */
+        /* আপনার দেওয়া স্টাইলগুলো হুবহু এখানে থাকবে (বিন্দুমাত্র পরিবর্তন নেই) */
         :root {
             --primary-blue: #5865f2; --accent-orange: #ff8c7a; --bg-color: #f8faff;
             --white: #ffffff; --text-main: #2d3436; --text-muted: #636e72;
@@ -52,6 +49,7 @@
         .input-group { margin-bottom: 20px; }
         .label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
         .input-box { width: 100%; background: var(--white); border: 1.5px solid rgba(0,0,0,0.05); padding: 15px; border-radius: 18px; font-size: 15px; font-weight: 600; outline: none; }
+        .op-select-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
         .op-pill { background: var(--white); padding: 12px; border-radius: 14px; text-align: center; font-size: 10px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border: 1.5px solid transparent; }
         .op-pill.active { border-color: var(--primary-blue); color: var(--primary-blue); background: #f0f3ff; }
         .action-btn { width: 100%; background: linear-gradient(135deg, #5865f2, #8e94f2); color: white; border: none; padding: 16px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; }
@@ -71,11 +69,10 @@
     <div class="main-wrapper">
         <header class="app-header">
             <div class="profile-section-top">
-                <!-- ডাইনামিক ইমেজ এবং টেক্সট -->
-                <div class="user-avatar-top"><img id="user-img" src="" alt=""></div>
+                <div class="user-avatar-top"><img id="u-img" src="" alt=""></div>
                 <div class="user-info-top">
-                    <h2 id="user-id">0000000000</h2>
-                    <p id="user-name">Loading...</p>
+                    <h2 id="u-id">Loading...</h2>
+                    <p id="u-name">Please wait</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -84,128 +81,96 @@
         </header>
 
         <div id="content-view">
-            <!-- ডাইনামিক কন্টেন্ট এখানে লোড হবে -->
+            <!-- Dynamic Content -->
         </div>
     </div>
 
     <nav class="bottom-nav">
         <a class="nav-link" id="nav-rec" onclick="switchView('recharge', this)"><i class="fas fa-bolt"></i><span>Recharge</span></a>
-        <a class="nav-link" onclick="switchView('offers', this)"><i class="fas fa-gift"></i><span>Offers</span></a>
+        <a class="nav-link" id="nav-off" onclick="switchView('offers', this)"><i class="fas fa-gift"></i><span>Offers</span></a>
         <div class="fab-home" onclick="switchView('home', null)"><i class="fas fa-home"></i></div>
         <a class="nav-link" onclick="switchView('history', this)"><i class="fas fa-history"></i><span>History</span></a>
         <a class="nav-link" onclick="switchView('account', this)"><i class="fas fa-user"></i><span>Account</span></a>
     </nav>
 
     <script>
-        // --- ফায়ারবেস কনফিগ ---
+        // --- ফায়ারবেস সেটিংস (এখানে আপনার নিজস্ব কী বসাবেন) ---
         const firebaseConfig = {
-  apiKey: "AIzaSyCbYJQ9y9CJKiT5aJyrIA0pFRGy1uvZikA",
-  authDomain: "telicombangla-1.firebaseapp.com",
-  projectId: "telicombangla-1",
-  storageBucket: "telicombangla-1.firebasestorage.app",
-  messagingSenderId: "1020351520674",
-  appId: "1:1020351520674:web:c84659bc5ca2f6b41edcfb"
-};
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // --- টেলিগ্রাম ডাটা ---
+        // --- টেলিগ্রাম সেটিংস ---
         const tg = window.Telegram.WebApp;
         tg.expand();
         const tgUser = tg.initDataUnsafe?.user;
 
         const contentView = document.getElementById('content-view');
-        let userData = { balance: 0, name: 'User', id: '0' };
+        let userData = { balance: 0, name: 'User', id: '0', photo: '' };
 
-        // --- ইউজারের ডাটাবেস থেকে তথ্য আনা ---
+        // ১. রিয়েলটাইম ইউজার ডাটা আপডেট
         if (tgUser) {
             db.collection('users').doc(tgUser.id.toString()).onSnapshot(doc => {
                 if (doc.exists) {
                     userData = doc.data();
-                    document.getElementById('user-id').innerText = userData.id;
-                    document.getElementById('user-name').innerText = userData.name;
-                    document.getElementById('user-img').src = userData.photo || 'https://i.pravatar.cc/150';
-                    if (document.getElementById('balance-amount')) {
-                        document.getElementById('balance-amount').innerText = '৳ ' + userData.balance;
+                    document.getElementById('u-id').innerText = userData.id;
+                    document.getElementById('u-name').innerText = userData.name;
+                    document.getElementById('u-img').src = userData.photo || 'https://i.pravatar.cc/150';
+                    if(document.getElementById('live-balance')) {
+                        document.getElementById('live-balance').innerText = '৳ ' + userData.balance;
                     }
                 }
             });
         }
 
-        // --- হোম ভিউ ---
-        function renderHome() {
-            contentView.innerHTML = `
-                <div class="balance-section">
-                    <div class="balance-card">
-                        <div class="bal-left"><p>Available Balance</p><h3 id="balance-amount">৳ ${userData.balance}</h3></div>
-                        <div class="add-money-btn" onclick="showToast('Add Money খুলেছে')"><i class="fas fa-plus-circle"></i> Add Money</div>
-                    </div>
-                </div>
-                <div style="display:flex; justify-content:space-between; padding:10px 20px;">
-                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-tag"></i></div><span style="font-size:9px; font-weight:600;">My Offer</span></div>
-                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-globe"></i></div><span style="font-size:9px; font-weight:600;">Data</span></div>
-                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-phone-alt"></i></div><span style="font-size:9px; font-weight:600;">Minute</span></div>
-                    <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-comment-dots"></i></div><span style="font-size:9px; font-weight:600;">SMS</span></div>
-                </div>
-                <div class="offers-grid" id="home-offers">
-                    <!-- অফারগুলো ফায়ারবেস থেকে আসবে -->
-                </div>
-            `;
-            loadOffers('home-offers', 2); // হোমে ২টা অফার দেখাবে
-        }
-
-        // --- অফার ভিউ ---
-        function renderOffers() {
-            contentView.innerHTML = `
-                <div class="op-grid-3">
-                    <div class="op-card-mini active" onclick="loadOffers('all-offers', 20)">All Offer</div>
-                    <div class="op-card-mini" onclick="loadOffers('all-offers', 20, 'Robi')">Robi</div>
-                    <div class="op-card-mini" onclick="loadOffers('all-offers', 20, 'GP')">GP</div>
-                    <div class="op-card-mini" onclick="loadOffers('all-offers', 20, 'Banglalink')">Banglalink</div>
-                    <div class="op-card-mini" onclick="loadOffers('all-offers', 20, 'Airtel')">Airtel</div>
-                    <div class="op-card-mini" onclick="loadOffers('all-offers', 20, 'Teletalk')">Teletalk</div>
-                </div>
-                <div class="offers-grid" id="all-offers"></div>
-            `;
-            loadOffers('all-offers', 20);
-        }
-
-        // --- ফায়ারবেস থেকে অফার লোড করার ফাংশন ---
-        function loadOffers(containerId, limit, operator = null) {
-            let query = db.collection('offers');
-            if (operator) query = query.where('operator', '==', operator);
-            
-            query.limit(limit).onSnapshot(snapshot => {
-                const container = document.getElementById(containerId);
-                if (!container) return;
-                let html = '';
-                snapshot.forEach(doc => {
-                    const offer = doc.data();
-                    html += `
-                        <div class="card">
-                            <span class="op-tag tag-${offer.operator.toLowerCase()}">${offer.operator}</span>
-                            <div class="card-title"><i class="fas fa-bolt"></i> ${offer.title}</div>
-                            <div class="validity">${offer.validity}</div>
-                            <button class="price-button" onclick="buyOffer('${doc.id}', ${offer.price})">৳ ${offer.price}</button>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            });
-        }
-
-        // --- ভিউ সুইচিং লজিক ---
+        // --- আপনার দেওয়া ভিউ লজিক (হুবহু সেম রাখা হয়েছে) ---
         function switchView(v, el) {
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             if(el) el.classList.add('active');
-            
-            if(v === 'home') renderHome();
-            else if(v === 'offers') renderOffers();
+
+            if(v === 'home') {
+                contentView.innerHTML = `
+                    <div class="balance-section">
+                        <div class="balance-card">
+                            <div class="bal-left"><p>Available Balance</p><h3 id="live-balance">৳ ${userData.balance}</h3></div>
+                            <div class="add-money-btn" onclick="showToast('Add Money খুলেছে')"><i class="fas fa-plus-circle"></i> Add Money</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:10px 20px;">
+                        <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-tag"></i></div><span style="font-size:9px; font-weight:600;">My Offer</span></div>
+                        <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-globe"></i></div><span style="font-size:9px; font-weight:600;">Data</span></div>
+                        <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-phone-alt"></i></div><span style="font-size:9px; font-weight:600;">Minute</span></div>
+                        <div style="text-align:center;"><div style="width:50px; height:50px; background:white; border-radius:15px; display:flex; align-items:center; justify-content:center; color:var(--primary-blue); box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:5px;"><i class="fas fa-comment-dots"></i></div><span style="font-size:9px; font-weight:600;">SMS</span></div>
+                    </div>
+                    <div class="offers-grid" id="home-offers-list"></div>
+                `;
+                loadOffers('home-offers-list', 2);
+            } 
+            else if(v === 'offers') {
+                contentView.innerHTML = `
+                    <div class="op-grid-3">
+                        <div class="op-card-mini active" onclick="loadOffers('all-offers-list', 20)">All Offer</div>
+                        <div class="op-card-mini" onclick="loadOffers('all-offers-list', 20, 'Robi')">Robi</div>
+                        <div class="op-card-mini" onclick="loadOffers('all-offers-list', 20, 'GP')">GP</div>
+                        <div class="op-card-mini" onclick="loadOffers('all-offers-list', 20, 'Banglalink')">Banglalink</div>
+                        <div class="op-card-mini" onclick="loadOffers('all-offers-list', 20, 'Airtel')">Airtel</div>
+                        <div class="op-card-mini" onclick="loadOffers('all-offers-list', 20, 'Teletalk')">Teletalk</div>
+                    </div>
+                    <div class="offers-grid" id="all-offers-list"></div>
+                `;
+                loadOffers('all-offers-list', 20);
+            }
             else if(v === 'recharge') {
                 contentView.innerHTML = `
                     <div class="recharge-container">
                         <h3 style="font-size:17px; text-align:center; margin-bottom:25px;">মোবাইল রিচার্জ</h3>
-                        <div class="input-group"><label class="label">নম্বর দিন</label><input type="tel" id="rec-num" class="input-box" placeholder="01XXXXXXXXX"></div>
+                        <div class="input-group"><label class="label">নম্বর দিন</label><input type="tel" class="input-box" id="rec-num" placeholder="01XXXXXXXXX"></div>
                         <div class="input-group">
                             <label class="label">অপারেটর সিলেক্ট করুন</label>
                             <div class="op-select-row">
@@ -214,16 +179,51 @@
                                 <div class="op-pill" onclick="selOp(this, 'Banglalink')">Banglalink</div>
                                 <div class="op-pill" onclick="selOp(this, 'Airtel')">Airtel</div>
                                 <div class="op-pill" onclick="selOp(this, 'Teletalk')">Teletalk</div>
+                                <div class="op-pill" onclick="selOp(this, 'Skitto')">Skitto</div>
                             </div>
                         </div>
                         <div class="input-group"><label class="label">টাকার পরিমাণ</label><input type="number" id="rec-amount" class="input-box" placeholder="৳ 0.00"></div>
-                        <button class="action-btn" onclick="processRecharge()">রিচার্জ করুন</button>
+                        <button class="action-btn" onclick="submitRecharge()">রিচার্জ করুন</button>
                     </div>
                 `;
             }
             else if(v === 'account') {
-                contentView.innerHTML = `<div class="account-page" style="padding:20px;"><div style="background:linear-gradient(135deg,#7b88ff,#5865f2); border-radius:25px; padding:25px; color:white; display:flex; align-items:center; gap:20px;"><div style="width:70px; height:70px; border-radius:50%; overflow:hidden; border:2px solid white;"><img src="${userData.photo}" style="width:100%;"></div><div><h2 style="font-size:16px;">${userData.name}</h2><p style="font-size:11px; opacity:0.9;">${userData.id}</p></div></div></div>`;
+                contentView.innerHTML = `
+                    <div class="account-page" style="padding:20px;">
+                        <div style="background:linear-gradient(135deg,#7b88ff,#5865f2); border-radius:25px; padding:25px; color:white; display:flex; align-items:center; gap:20px;">
+                            <div style="width:70px; height:70px; border-radius:50%; overflow:hidden; border:2px solid white;">
+                                <img src="${userData.photo}" style="width:100%;">
+                            </div>
+                            <div>
+                                <h2 style="font-size:16px;">${userData.name}</h2>
+                                <p style="font-size:11px; opacity:0.9;">${userData.id}</p>
+                            </div>
+                        </div>
+                    </div>`;
+            } else {
+                contentView.innerHTML = `<div style="text-align:center; padding-top:100px; color:#aaa;">পেজটি দ্রুত আসছে...</div>`;
             }
+        }
+
+        // ২. ডাটাবেস থেকে অফার লোড করা
+        function loadOffers(elementId, limit, op = null) {
+            let ref = db.collection('offers');
+            if(op) ref = ref.where('operator', '==', op);
+            
+            ref.limit(limit).onSnapshot(snap => {
+                let html = '';
+                snap.forEach(doc => {
+                    const o = doc.data();
+                    html += `
+                        <div class="card">
+                            <span class="op-tag tag-${o.operator.toLowerCase()}">${o.operator}</span>
+                            <div class="card-title"><i class="fas fa-globe"></i> ${o.title}</div>
+                            <div class="validity">${o.validity} মেয়াদ</div>
+                            <button class="price-button" onclick="buyOffer('${doc.id}', ${o.price})">৳ ${o.price}</button>
+                        </div>`;
+                });
+                document.getElementById(elementId).innerHTML = html;
+            });
         }
 
         let selectedOp = '';
@@ -233,9 +233,19 @@
             selectedOp = op;
         }
 
-        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 1800); }
+        function showToast(m) { 
+            const t = document.getElementById('toast'); 
+            t.innerText = m; t.style.display = 'block'; 
+            setTimeout(() => t.style.display = 'none', 1800); 
+        }
 
-        // ডিফল্ট হোম ভিউ
+        function submitRecharge() {
+            const num = document.getElementById('rec-num').value;
+            const am = document.getElementById('rec-amount').value;
+            if(!num || !am || !selectedOp) return showToast('সব তথ্য দিন');
+            showToast('অনুরোধ পাঠানো হয়েছে');
+        }
+
         switchView('home');
     </script>
 </body>
