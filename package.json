@@ -1,8 +1,8 @@
 {
-  "name": "telecom-bangla",
+  "name": "telecom-mini-app",
   "version": "1.0.0",
-  "description": "Premium Telecom App",
-  "scripts": {
-    "start": "serve ."
+  "dependencies": {
+    "telegraf": "^4.12.2",
+    "firebase-admin": "^11.10.1"
   }
 }
