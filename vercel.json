@@ -1,8 +1,0 @@
-{
-  "version": 2,
-  "rewrites": [
-    { "source": "/api/bot", "destination": "/api/bot.js" },
-    { "source": "/api/broadcast", "destination": "/api/broadcast.js" }
-  ],
-  "public": true
-}
